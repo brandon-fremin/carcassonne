@@ -1,0 +1,39 @@
+[
+  {
+      "image": "basic_v2_FFFR_M",
+      "i": 0,
+      "j": 0,
+      "rot": 0,
+      "pois": []
+  },
+  {
+      "image": "basic_v2_FCFF",
+      "i": 0,
+      "j": -1,
+      "rot": 0,
+      "pois": []
+  },
+  {
+      "image": "basic_v2_FFFF_M",
+      "i": 0,
+      "j": 1,
+      "rot": 0,
+      "pois": []
+  },
+  {
+      "image": "basic_v2_RCRF_LR",
+      "i": 1,
+      "j": 0,
+      "rot": 0,
+      "pois": []
+  },
+  {
+      "image": "basic_v2_CCCCC_S",
+      "i": -1,
+      "j": 0,
+      "rot": 0,
+      "pois": []
+  }
+
+  
+]

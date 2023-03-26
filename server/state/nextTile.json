@@ -1,0 +1,29 @@
+{
+  "image": "basic_v2_CFCF_XF2367_N3GW",
+  "rot": 0,
+  "i": null,
+  "j": null,
+  "sides": {
+    "right": "C",
+    "top": "F",
+    "left": "C",
+    "bottom": "F"
+  },
+  "pois": [],
+  "cons": {
+    "city": [],
+    "road": [],
+    "field": [
+      [
+        2,
+        3,
+        6,
+        7
+      ]
+    ]
+  },
+  "isStart": false,
+  "numShields": 0,
+  "isGarden": false,
+  "isUnplayable": false
+}

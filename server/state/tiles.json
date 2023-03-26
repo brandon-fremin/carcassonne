@@ -1,0 +1,2580 @@
+[
+  {
+    "image": "basic_v2_CCCC_S_XC1234_N1W",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "C",
+      "top": "C",
+      "left": "C",
+      "bottom": "C"
+    },
+    "pois": [],
+    "cons": {
+      "city": [
+        [
+          1,
+          2,
+          3,
+          4
+        ]
+      ],
+      "road": [],
+      "field": []
+    },
+    "isStart": false,
+    "numShields": 1,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_CCCF_S_XC123_XF67_N1",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "C",
+      "top": "C",
+      "left": "C",
+      "bottom": "F"
+    },
+    "pois": [],
+    "cons": {
+      "city": [
+        [
+          1,
+          2,
+          3
+        ]
+      ],
+      "road": [],
+      "field": [
+        [
+          6,
+          7
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 1,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_CCCF_XC123_XF67_N3GW",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "C",
+      "top": "C",
+      "left": "C",
+      "bottom": "F"
+    },
+    "pois": [],
+    "cons": {
+      "city": [
+        [
+          1,
+          2,
+          3
+        ]
+      ],
+      "road": [],
+      "field": [
+        [
+          6,
+          7
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_CCCF_XC123_XF67_N3GW",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "C",
+      "top": "C",
+      "left": "C",
+      "bottom": "F"
+    },
+    "pois": [],
+    "cons": {
+      "city": [
+        [
+          1,
+          2,
+          3
+        ]
+      ],
+      "road": [],
+      "field": [
+        [
+          6,
+          7
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_CCCF_XC123_XF67_N3GW",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "C",
+      "top": "C",
+      "left": "C",
+      "bottom": "F"
+    },
+    "pois": [],
+    "cons": {
+      "city": [
+        [
+          1,
+          2,
+          3
+        ]
+      ],
+      "road": [],
+      "field": [
+        [
+          6,
+          7
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_CCCR_S_XC123_N2W",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "C",
+      "top": "C",
+      "left": "C",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [
+        [
+          1,
+          2,
+          3
+        ]
+      ],
+      "road": [],
+      "field": []
+    },
+    "isStart": false,
+    "numShields": 1,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_CCCR_S_XC123_N2W",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "C",
+      "top": "C",
+      "left": "C",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [
+        [
+          1,
+          2,
+          3
+        ]
+      ],
+      "road": [],
+      "field": []
+    },
+    "isStart": false,
+    "numShields": 1,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_CCCR_XC123_N1",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "C",
+      "top": "C",
+      "left": "C",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [
+        [
+          1,
+          2,
+          3
+        ]
+      ],
+      "road": [],
+      "field": []
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_CCFF_S_XC12_XF3456_N2G",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "C",
+      "top": "C",
+      "left": "F",
+      "bottom": "F"
+    },
+    "pois": [],
+    "cons": {
+      "city": [
+        [
+          1,
+          2
+        ]
+      ],
+      "road": [],
+      "field": [
+        [
+          3,
+          4,
+          5,
+          6
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 1,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_CCFF_S_XC12_XF3456_N2G",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "C",
+      "top": "C",
+      "left": "F",
+      "bottom": "F"
+    },
+    "pois": [],
+    "cons": {
+      "city": [
+        [
+          1,
+          2
+        ]
+      ],
+      "road": [],
+      "field": [
+        [
+          3,
+          4,
+          5,
+          6
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 1,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_CCFF_XC12_XF3456_N3GW",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "C",
+      "top": "C",
+      "left": "F",
+      "bottom": "F"
+    },
+    "pois": [],
+    "cons": {
+      "city": [
+        [
+          1,
+          2
+        ]
+      ],
+      "road": [],
+      "field": [
+        [
+          3,
+          4,
+          5,
+          6
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_CCFF_XC12_XF3456_N3GW",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "C",
+      "top": "C",
+      "left": "F",
+      "bottom": "F"
+    },
+    "pois": [],
+    "cons": {
+      "city": [
+        [
+          1,
+          2
+        ]
+      ],
+      "road": [],
+      "field": [
+        [
+          3,
+          4,
+          5,
+          6
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_CCFF_XC12_XF3456_N3GW",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "C",
+      "top": "C",
+      "left": "F",
+      "bottom": "F"
+    },
+    "pois": [],
+    "cons": {
+      "city": [
+        [
+          1,
+          2
+        ]
+      ],
+      "road": [],
+      "field": [
+        [
+          3,
+          4,
+          5,
+          6
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_CCFF_XF4567_N2G",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "C",
+      "top": "C",
+      "left": "F",
+      "bottom": "F"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [],
+      "field": [
+        [
+          4,
+          5,
+          6,
+          7
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_CCFF_XF4567_N2G",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "C",
+      "top": "C",
+      "left": "F",
+      "bottom": "F"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [],
+      "field": [
+        [
+          4,
+          5,
+          6,
+          7
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_CFCF_S_XC13_XF23_XF67_N2W",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "C",
+      "top": "F",
+      "left": "C",
+      "bottom": "F"
+    },
+    "pois": [],
+    "cons": {
+      "city": [
+        [
+          1,
+          3
+        ]
+      ],
+      "road": [],
+      "field": [
+        [
+          2,
+          3
+        ],
+        [
+          6,
+          7
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 1,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_CFCF_S_XC13_XF23_XF67_N2W",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "C",
+      "top": "F",
+      "left": "C",
+      "bottom": "F"
+    },
+    "pois": [],
+    "cons": {
+      "city": [
+        [
+          1,
+          3
+        ]
+      ],
+      "road": [],
+      "field": [
+        [
+          2,
+          3
+        ],
+        [
+          6,
+          7
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 1,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_CFCF_XC13_XF23_XF67_N1",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "C",
+      "top": "F",
+      "left": "C",
+      "bottom": "F"
+    },
+    "pois": [],
+    "cons": {
+      "city": [
+        [
+          1,
+          3
+        ]
+      ],
+      "road": [],
+      "field": [
+        [
+          2,
+          3
+        ],
+        [
+          6,
+          7
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_CFCF_XF2367_N3GW",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "C",
+      "top": "F",
+      "left": "C",
+      "bottom": "F"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [],
+      "field": [
+        [
+          2,
+          3,
+          6,
+          7
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_CFCF_XF2367_N3GW",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "C",
+      "top": "F",
+      "left": "C",
+      "bottom": "F"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [],
+      "field": [
+        [
+          2,
+          3,
+          6,
+          7
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_CFCF_XF2367_N3GW",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "C",
+      "top": "F",
+      "left": "C",
+      "bottom": "F"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [],
+      "field": [
+        [
+          2,
+          3,
+          6,
+          7
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_FCFF_XF145678_N5GFW",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "F",
+      "top": "C",
+      "left": "F",
+      "bottom": "F"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [],
+      "field": [
+        [
+          1,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_FCFF_XF145678_N5GFW",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "F",
+      "top": "C",
+      "left": "F",
+      "bottom": "F"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [],
+      "field": [
+        [
+          1,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_FCFF_XF145678_N5GFW",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "F",
+      "top": "C",
+      "left": "F",
+      "bottom": "F"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [],
+      "field": [
+        [
+          1,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_FCFF_XF145678_N5GFW",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "F",
+      "top": "C",
+      "left": "F",
+      "bottom": "F"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [],
+      "field": [
+        [
+          1,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_FCFF_XF145678_N5GFW",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "F",
+      "top": "C",
+      "left": "F",
+      "bottom": "F"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [],
+      "field": [
+        [
+          1,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_FCRR_XR34_XF1478_XF56_N3HFD",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "F",
+      "top": "C",
+      "left": "R",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [
+        [
+          3,
+          4
+        ]
+      ],
+      "field": [
+        [
+          1,
+          4,
+          7,
+          8
+        ],
+        [
+          5,
+          6
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_FCRR_XR34_XF1478_XF56_N3HFD",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "F",
+      "top": "C",
+      "left": "R",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [
+        [
+          3,
+          4
+        ]
+      ],
+      "field": [
+        [
+          1,
+          4,
+          7,
+          8
+        ],
+        [
+          5,
+          6
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_FCRR_XR34_XF1478_XF56_N3HFD",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "F",
+      "top": "C",
+      "left": "R",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [
+        [
+          3,
+          4
+        ]
+      ],
+      "field": [
+        [
+          1,
+          4,
+          7,
+          8
+        ],
+        [
+          5,
+          6
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_FFFF_M_XF12345678_N4FD",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "F",
+      "top": "F",
+      "left": "F",
+      "bottom": "F"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [],
+      "field": [
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_FFFF_M_XF12345678_N4FD",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "F",
+      "top": "F",
+      "left": "F",
+      "bottom": "F"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [],
+      "field": [
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_FFFF_M_XF12345678_N4FD",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "F",
+      "top": "F",
+      "left": "F",
+      "bottom": "F"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [],
+      "field": [
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_FFFF_M_XF12345678_N4FD",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "F",
+      "top": "F",
+      "left": "F",
+      "bottom": "F"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [],
+      "field": [
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_FFFR_M_XF12345678_N2H",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "F",
+      "top": "F",
+      "left": "F",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [],
+      "field": [
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_FFFR_M_XF12345678_N2H",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "F",
+      "top": "F",
+      "left": "F",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [],
+      "field": [
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_FFRR_XR34_XF123478_XF56_N9GHHFPC",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "F",
+      "top": "F",
+      "left": "R",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [
+        [
+          3,
+          4
+        ]
+      ],
+      "field": [
+        [
+          1,
+          2,
+          3,
+          4,
+          7,
+          8
+        ],
+        [
+          5,
+          6
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_FFRR_XR34_XF123478_XF56_N9GHHFPC",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "F",
+      "top": "F",
+      "left": "R",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [
+        [
+          3,
+          4
+        ]
+      ],
+      "field": [
+        [
+          1,
+          2,
+          3,
+          4,
+          7,
+          8
+        ],
+        [
+          5,
+          6
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_FFRR_XR34_XF123478_XF56_N9GHHFPC",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "F",
+      "top": "F",
+      "left": "R",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [
+        [
+          3,
+          4
+        ]
+      ],
+      "field": [
+        [
+          1,
+          2,
+          3,
+          4,
+          7,
+          8
+        ],
+        [
+          5,
+          6
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_FFRR_XR34_XF123478_XF56_N9GHHFPC",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "F",
+      "top": "F",
+      "left": "R",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [
+        [
+          3,
+          4
+        ]
+      ],
+      "field": [
+        [
+          1,
+          2,
+          3,
+          4,
+          7,
+          8
+        ],
+        [
+          5,
+          6
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_FFRR_XR34_XF123478_XF56_N9GHHFPC",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "F",
+      "top": "F",
+      "left": "R",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [
+        [
+          3,
+          4
+        ]
+      ],
+      "field": [
+        [
+          1,
+          2,
+          3,
+          4,
+          7,
+          8
+        ],
+        [
+          5,
+          6
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_FFRR_XR34_XF123478_XF56_N9GHHFPC",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "F",
+      "top": "F",
+      "left": "R",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [
+        [
+          3,
+          4
+        ]
+      ],
+      "field": [
+        [
+          1,
+          2,
+          3,
+          4,
+          7,
+          8
+        ],
+        [
+          5,
+          6
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_FFRR_XR34_XF123478_XF56_N9GHHFPC",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "F",
+      "top": "F",
+      "left": "R",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [
+        [
+          3,
+          4
+        ]
+      ],
+      "field": [
+        [
+          1,
+          2,
+          3,
+          4,
+          7,
+          8
+        ],
+        [
+          5,
+          6
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_FFRR_XR34_XF123478_XF56_N9GHHFPC",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "F",
+      "top": "F",
+      "left": "R",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [
+        [
+          3,
+          4
+        ]
+      ],
+      "field": [
+        [
+          1,
+          2,
+          3,
+          4,
+          7,
+          8
+        ],
+        [
+          5,
+          6
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_FFRR_XR34_XF123478_XF56_N9GHHFPC",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "F",
+      "top": "F",
+      "left": "R",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [
+        [
+          3,
+          4
+        ]
+      ],
+      "field": [
+        [
+          1,
+          2,
+          3,
+          4,
+          7,
+          8
+        ],
+        [
+          5,
+          6
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_FRFR_XR24_XF1278_XF3456_N8GHHFP",
+    "rot": 270,
+    "i": 1,
+    "j": 0,
+    "sides": {
+      "right": "R",
+      "top": "F",
+      "left": "R",
+      "bottom": "F"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [
+        [
+          1,
+          3
+        ]
+      ],
+      "field": [
+        [
+          7,
+          8,
+          5,
+          6
+        ],
+        [
+          1,
+          2,
+          3,
+          4
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_FRFR_XR24_XF1278_XF3456_N8GHHFP",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "F",
+      "top": "R",
+      "left": "F",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [
+        [
+          2,
+          4
+        ]
+      ],
+      "field": [
+        [
+          1,
+          2,
+          7,
+          8
+        ],
+        [
+          3,
+          4,
+          5,
+          6
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_FRFR_XR24_XF1278_XF3456_N8GHHFP",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "F",
+      "top": "R",
+      "left": "F",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [
+        [
+          2,
+          4
+        ]
+      ],
+      "field": [
+        [
+          1,
+          2,
+          7,
+          8
+        ],
+        [
+          3,
+          4,
+          5,
+          6
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_FRFR_XR24_XF1278_XF3456_N8GHHFP",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "F",
+      "top": "R",
+      "left": "F",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [
+        [
+          2,
+          4
+        ]
+      ],
+      "field": [
+        [
+          1,
+          2,
+          7,
+          8
+        ],
+        [
+          3,
+          4,
+          5,
+          6
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_FRFR_XR24_XF1278_XF3456_N8GHHFP",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "F",
+      "top": "R",
+      "left": "F",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [
+        [
+          2,
+          4
+        ]
+      ],
+      "field": [
+        [
+          1,
+          2,
+          7,
+          8
+        ],
+        [
+          3,
+          4,
+          5,
+          6
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_FRFR_XR24_XF1278_XF3456_N8GHHFP",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "F",
+      "top": "R",
+      "left": "F",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [
+        [
+          2,
+          4
+        ]
+      ],
+      "field": [
+        [
+          1,
+          2,
+          7,
+          8
+        ],
+        [
+          3,
+          4,
+          5,
+          6
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_FRFR_XR24_XF1278_XF3456_N8GHHFP",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "F",
+      "top": "R",
+      "left": "F",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [
+        [
+          2,
+          4
+        ]
+      ],
+      "field": [
+        [
+          1,
+          2,
+          7,
+          8
+        ],
+        [
+          3,
+          4,
+          5,
+          6
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_FRFR_XR24_XF1278_XF3456_N8GHHFP",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "F",
+      "top": "R",
+      "left": "F",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [
+        [
+          2,
+          4
+        ]
+      ],
+      "field": [
+        [
+          1,
+          2,
+          7,
+          8
+        ],
+        [
+          3,
+          4,
+          5,
+          6
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_RCCR_S_XC23_XR14_XF16_XF78_N2FC",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "R",
+      "top": "C",
+      "left": "C",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [
+        [
+          2,
+          3
+        ]
+      ],
+      "road": [
+        [
+          1,
+          4
+        ]
+      ],
+      "field": [
+        [
+          1,
+          6
+        ],
+        [
+          7,
+          8
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 1,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_RCCR_S_XC23_XR14_XF16_XF78_N2FC",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "R",
+      "top": "C",
+      "left": "C",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [
+        [
+          2,
+          3
+        ]
+      ],
+      "road": [
+        [
+          1,
+          4
+        ]
+      ],
+      "field": [
+        [
+          1,
+          6
+        ],
+        [
+          7,
+          8
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 1,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_RCCR_XC23_XR14_XF16_XF78_N3HW",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "R",
+      "top": "C",
+      "left": "C",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [
+        [
+          2,
+          3
+        ]
+      ],
+      "road": [
+        [
+          1,
+          4
+        ]
+      ],
+      "field": [
+        [
+          1,
+          6
+        ],
+        [
+          7,
+          8
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_RCCR_XC23_XR14_XF16_XF78_N3HW",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "R",
+      "top": "C",
+      "left": "C",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [
+        [
+          2,
+          3
+        ]
+      ],
+      "road": [
+        [
+          1,
+          4
+        ]
+      ],
+      "field": [
+        [
+          1,
+          6
+        ],
+        [
+          7,
+          8
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_RCCR_XC23_XR14_XF16_XF78_N3HW",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "R",
+      "top": "C",
+      "left": "C",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [
+        [
+          2,
+          3
+        ]
+      ],
+      "road": [
+        [
+          1,
+          4
+        ]
+      ],
+      "field": [
+        [
+          1,
+          6
+        ],
+        [
+          7,
+          8
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_RCFR_XR14_XF1456_XF78_N3HFC",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "R",
+      "top": "C",
+      "left": "F",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [
+        [
+          1,
+          4
+        ]
+      ],
+      "field": [
+        [
+          1,
+          4,
+          5,
+          6
+        ],
+        [
+          7,
+          8
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_RCFR_XR14_XF1456_XF78_N3HFC",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "R",
+      "top": "C",
+      "left": "F",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [
+        [
+          1,
+          4
+        ]
+      ],
+      "field": [
+        [
+          1,
+          4,
+          5,
+          6
+        ],
+        [
+          7,
+          8
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_RCFR_XR14_XF1456_XF78_N3HFC",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "R",
+      "top": "C",
+      "left": "F",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [
+        [
+          1,
+          4
+        ]
+      ],
+      "field": [
+        [
+          1,
+          4,
+          5,
+          6
+        ],
+        [
+          7,
+          8
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_RCRF_XR13_XF14_XF5678_N4FP_start",
+    "rot": 0,
+    "i": 0,
+    "j": 0,
+    "sides": {
+      "right": "R",
+      "top": "C",
+      "left": "R",
+      "bottom": "F"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [
+        [
+          1,
+          3
+        ]
+      ],
+      "field": [
+        [
+          1,
+          4
+        ],
+        [
+          5,
+          6,
+          7,
+          8
+        ]
+      ]
+    },
+    "isStart": true,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_RCRF_XR13_XF14_XF5678_N4FP_start",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "R",
+      "top": "C",
+      "left": "R",
+      "bottom": "F"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [
+        [
+          1,
+          3
+        ]
+      ],
+      "field": [
+        [
+          1,
+          4
+        ],
+        [
+          5,
+          6,
+          7,
+          8
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_RCRF_XR13_XF14_XF5678_N4FP_start",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "R",
+      "top": "C",
+      "left": "R",
+      "bottom": "F"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [
+        [
+          1,
+          3
+        ]
+      ],
+      "field": [
+        [
+          1,
+          4
+        ],
+        [
+          5,
+          6,
+          7,
+          8
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_RCRF_XR13_XF14_XF5678_N4FP_start",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "R",
+      "top": "C",
+      "left": "R",
+      "bottom": "F"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [
+        [
+          1,
+          3
+        ]
+      ],
+      "field": [
+        [
+          1,
+          4
+        ],
+        [
+          5,
+          6,
+          7,
+          8
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_RCRR_XF14_XF56_XF78_N3",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "R",
+      "top": "C",
+      "left": "R",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [],
+      "field": [
+        [
+          1,
+          4
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          7,
+          8
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_RCRR_XF14_XF56_XF78_N3",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "R",
+      "top": "C",
+      "left": "R",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [],
+      "field": [
+        [
+          1,
+          4
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          7,
+          8
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_RCRR_XF14_XF56_XF78_N3",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "R",
+      "top": "C",
+      "left": "R",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [],
+      "field": [
+        [
+          1,
+          4
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          7,
+          8
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_RFRR_XF1234_XF56_XF78_N4",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "R",
+      "top": "F",
+      "left": "R",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [],
+      "field": [
+        [
+          1,
+          2,
+          3,
+          4
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          7,
+          8
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_RFRR_XF1234_XF56_XF78_N4",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "R",
+      "top": "F",
+      "left": "R",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [],
+      "field": [
+        [
+          1,
+          2,
+          3,
+          4
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          7,
+          8
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_RFRR_XF1234_XF56_XF78_N4",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "R",
+      "top": "F",
+      "left": "R",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [],
+      "field": [
+        [
+          1,
+          2,
+          3,
+          4
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          7,
+          8
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_RFRR_XF1234_XF56_XF78_N4",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "R",
+      "top": "F",
+      "left": "R",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [],
+      "field": [
+        [
+          1,
+          2,
+          3,
+          4
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          7,
+          8
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  },
+  {
+    "image": "basic_v2_RRRR_XF12_XF34_XF56_XF78_N1",
+    "rot": 0,
+    "i": null,
+    "j": null,
+    "sides": {
+      "right": "R",
+      "top": "R",
+      "left": "R",
+      "bottom": "R"
+    },
+    "pois": [],
+    "cons": {
+      "city": [],
+      "road": [],
+      "field": [
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          7,
+          8
+        ]
+      ]
+    },
+    "isStart": false,
+    "numShields": 0,
+    "isGarden": false,
+    "isUnplayable": false
+  }
+]
