@@ -1,6 +1,8 @@
 from move import Move
 from tile import Tile
 from feature import Feature
+from board import Board
+import json
 
 g = {
     "tileId": "x",
@@ -91,3 +93,8 @@ x = Tile(t.asdict())
 print(x)
 
 print(x.features[0].dumps())
+
+
+x = Board.default()
+print(x)
+print(json.dumps(x, indent=2))

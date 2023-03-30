@@ -19,7 +19,8 @@ class JSONDataEncoder(json.JSONEncoder):
             data = dict(obj)
             for field, type_hint in obj.__annotations__.items():
                 if JSONDataEncoder.is_union_type(type_hint):
-                    union_key = JSONDataEncoder.get_union_key(type(data[field]))
+                    union_key = JSONDataEncoder.get_union_key(
+                        type(data[field]))
                     data[field] = {union_key: data[field]}
             return data
         return super().default(obj)
@@ -173,6 +174,35 @@ def impl__hash__(self):
     return int(m.hexdigest(), 16)
 
 
+def impl__default__(cls):
+    def func():
+        primitive_types = [
+            str, int, bytes, float, bool
+        ]
+
+        def resolve_default(type_hint):
+            if type_hint in primitive_types:
+                return type_hint()
+            if "default" in dir(type_hint):
+                return type_hint.default()
+            if "__origin__" in dir(type_hint):
+                if type_hint.__origin__ is list:
+                    return [resolve_default(type_hint.__args__[0])]
+                elif type_hint.__origin__ is dict:
+                    return {repr(type_hint.__args__[0]): resolve_default(type_hint.__args__[1])}
+                elif type_hint.__origin__ is Union:
+                    return "Cannot Default Union Type!"
+                elif type_hint.__origin__ is Optional:
+                    return None  # TODO: Improve this
+            return f"ERROR: Cannot Default Type: {type_hint}"
+
+        return {
+            field: resolve_default(type_hint)
+            for field, type_hint in cls.__annotations__.items()}
+    
+    return func
+
+
 def jsondata(CLASS):
     CLASS.__init__ = impl__init__
     CLASS.__repr__ = impl__repr__
@@ -182,28 +212,6 @@ def jsondata(CLASS):
     CLASS.dumps = lambda self, **kwargs: json.dumps(
         self, cls=JSONDataEncoder, **kwargs)
     CLASS.asdict = lambda self: json.loads(self.dumps())
+    CLASS.default = impl__default__(CLASS)
     return CLASS
 
-
-# def jsondata(CLASS):
-#     class Wrapper(dict):
-#         def __init__(self, *args, **kwargs):
-#             self.__base = CLASS()
-#             initialize(self.__base, *args, **kwargs)
-#             dict.__init__(self, **extract_kwargs(self.__base, *args, **kwargs))
-
-#         def __getattr__(self, attr):
-#             return getattr(self.__base, attr)
-
-#         def __repr__(self):
-#             kw = [f"{k}={v!r}" for k, v in iter(self)]
-#             kw_str = ", ".join(kw)
-#             return f"{type(self.__base).__name__}({kw_str})"
-
-#         def __iter__(self):
-#             keys = self.__base.__annotations__.keys()
-#             for key in keys:
-#                 value = self.__base.__dict__[key]
-#                 yield key, value
-
-#     return Wrapper
