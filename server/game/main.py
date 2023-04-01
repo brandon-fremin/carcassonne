@@ -2,7 +2,7 @@ from move import Move
 from tile import Tile
 from feature import Feature
 from board import Board
-import json
+from jsondata import dumps, asdict
 
 g = {
     "tileId": "x",
@@ -20,7 +20,7 @@ print(m == n == j)
 print(hash(m))
 print(hash(n))
 print(hash(j))
-print(m.asdict())
+print(asdict(m))
 print("*******************************************")
 
 q = {
@@ -72,29 +72,25 @@ X = Feature(x)
 print(X)
 print(vars(X))
 print(dict(X))
-# print(json.dumps(X))
-# print(list(X.keys()))
-# print(list(X.values()))
 
 X.hello()
 
 print(X.__class__)
 
-print(X.dumps(indent=2))
+print(dumps(X, indent=2))
 
-print(X.asdict())
+print(asdict(X))
 
 t = Tile(q)
 
-print(t.asdict())
+print(asdict(t))
 
-x = Tile(t.asdict())
+x = Tile(asdict(t))
 
 print(x)
 
-print(x.features[0].dumps())
+print(dumps(x.features[0]))
 
 
-x = Board.default()
 print(x)
-print(json.dumps(x, indent=2))
+print(dumps(x, indent=2))

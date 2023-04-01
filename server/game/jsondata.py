@@ -26,38 +26,44 @@ class JSONDataEncoder(json.JSONEncoder):
         return super().default(obj)
 
 
-class TypeHints:
-    def dumps(self, **kw):
-        pass
+def dumps(obj, **kwargs) -> str:
+    return json.dumps(obj, cls=JSONDataEncoder, **kwargs)
 
-    def asdict(self):
-        pass
+
+def asdict(obj) -> dict:
+    return json.loads(dumps(obj))
 
 
 def extract_kwargs(obj, *args, **kwargs):
+    if len(args) == len(kwargs) == 0:
+        return {}
+
     if len(args) != 0 and len(kwargs) != 0:
         raise Exception(
             f"Cannot have both args and kwargs!"
             f" args={args} kwargs={kwargs}")
-    if len(args) > 1:
+
+    if len(args) > 1:  # len(kwargs) == 0
         raise Exception(
             f"Cannot have multiple positional args!"
             f" args={args}")
 
-    if len(args) == 1:
+    if len(args) == 1:  # len(kwargs) == 0
         kwargs = args[0]
 
-    if type(kwargs) is type(obj):
-        kwargs = kwargs.asdict()
+    if type(kwargs) is type(obj):  # kwargs was actually a jsondata object
+        kwargs = asdict(kwargs)
 
     if type(kwargs) is not dict:
         raise Exception(
             f"kwargs must be of type dict, not {type(kwargs).__name__}! kwargs={kwargs}")
 
-    if set(kwargs.keys()) != set(obj.__annotations__.keys()):
+    extra_keys = list(set(kwargs.keys()).difference(
+        set(obj.__annotations__.keys())))
+    if len(extra_keys) > 0:
         raise Exception(
-            f"kwargs must have same keys as class!"
-            f" kwargs={kwargs} annotation={obj.__annotations__}")
+            f"kwargs must only have keys in class!"
+            f" kwargs={kwargs} annotation={obj.__annotations__} extra_keys={extra_keys}")
 
     return copy.deepcopy(kwargs)
 
@@ -131,15 +137,32 @@ def recursive_parse_args(arg, type_hint):
         return parse_arg(arg, type_hint)
 
 
+def default(type_hint):
+    if "__origin__" in dir(type_hint):
+        origin = type_hint.__origin__
+        if origin is list:
+            return []
+        elif origin is dict:
+            return {}
+        elif origin is Union:
+            return None
+        elif origin is Optional:
+            return None
+        else:
+            raise Exception(
+                f"Cannot parse type_origin={origin} as default")
+    else:
+        return type_hint()
+
+
 def impl__init__(self, *args, **kwargs):
     try:
         kwargs = extract_kwargs(self, *args, **kwargs)
         for field, type_hint in self.__annotations__.items():
-            kwargs[field] = recursive_parse_args(kwargs[field], type_hint)
-
-        for key, value in kwargs.items():
-            self.__setattr__(key, value)
-
+            value = (recursive_parse_args(kwargs[field], type_hint)
+                     if len(kwargs) > 0
+                     else default(type_hint))
+            self.__setattr__(field, value)
     except Exception as e:
         raise Exception(f"Error initializing {self.__class__} -> {str(e)}")
 
@@ -166,42 +189,8 @@ def impl__eq__(self, other):
 
 def impl__hash__(self):
     m = hashlib.sha256()
-    m.update(self.dumps().encode())
+    m.update(dumps(self).encode())
     return int(m.hexdigest(), 16)
-
-
-def impl__default__(cls):
-    def func():
-        primitive_types = [str, int, bytes, float, bool]
-        def resolve_default(type_hint):
-            if type_hint in primitive_types:
-                return type_hint()
-            if "default" in dir(type_hint):
-                return type_hint.default()
-            if "__origin__" in dir(type_hint):
-                if type_hint.__origin__ is list:
-                    return [resolve_default(type_hint.__args__[0])]
-                elif type_hint.__origin__ is dict:
-                    return {repr(type_hint.__args__[0]): resolve_default(type_hint.__args__[1])}
-                elif type_hint.__origin__ is Union:
-                    return "Cannot Default Union Type!"
-                elif type_hint.__origin__ is Optional:
-                    return resolve_default(type_hint.__args__[0])
-            return f"ERROR: Cannot Default Type: {type_hint}"
-
-        return {
-            field: resolve_default(type_hint)
-            for field, type_hint in cls.__annotations__.items()}
-
-    return func
-
-
-def dumps(obj, **kwargs):
-    return json.dumps(obj, cls=JSONDataEncoder, **kwargs)
-
-
-def asdict(obj):
-    return json.loads(dumps(obj))
 
 
 def jsondata(CLASS):
@@ -210,9 +199,4 @@ def jsondata(CLASS):
     CLASS.__iter__ = impl__iter__
     CLASS.__eq__ = impl__eq__
     CLASS.__hash__ = impl__hash__
-    CLASS.dumps = dumps
-    CLASS.asdict = asdict
-    CLASS.default = impl__default__(CLASS)
     return CLASS
-
-
