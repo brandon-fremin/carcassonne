@@ -131,21 +131,17 @@ def recursive_parse_args(arg, type_hint):
         return parse_arg(arg, type_hint)
 
 
-def initialize(obj, *args, **kwargs):
+def impl__init__(self, *args, **kwargs):
     try:
-        kwargs = extract_kwargs(obj, *args, **kwargs)
-        for field, type_hint in obj.__annotations__.items():
+        kwargs = extract_kwargs(self, *args, **kwargs)
+        for field, type_hint in self.__annotations__.items():
             kwargs[field] = recursive_parse_args(kwargs[field], type_hint)
 
         for key, value in kwargs.items():
-            obj.__setattr__(key, value)
+            self.__setattr__(key, value)
 
     except Exception as e:
-        raise Exception(f"Error initializing {obj.__class__} -> {str(e)}")
-
-
-def impl__init__(self, *args, **kwargs):
-    initialize(self, *args, **kwargs)
+        raise Exception(f"Error initializing {self.__class__} -> {str(e)}")
 
 
 def impl__repr__(self):
@@ -176,10 +172,7 @@ def impl__hash__(self):
 
 def impl__default__(cls):
     def func():
-        primitive_types = [
-            str, int, bytes, float, bool
-        ]
-
+        primitive_types = [str, int, bytes, float, bool]
         def resolve_default(type_hint):
             if type_hint in primitive_types:
                 return type_hint()
@@ -193,14 +186,22 @@ def impl__default__(cls):
                 elif type_hint.__origin__ is Union:
                     return "Cannot Default Union Type!"
                 elif type_hint.__origin__ is Optional:
-                    return None  # TODO: Improve this
+                    return resolve_default(type_hint.__args__[0])
             return f"ERROR: Cannot Default Type: {type_hint}"
 
         return {
             field: resolve_default(type_hint)
             for field, type_hint in cls.__annotations__.items()}
-    
+
     return func
+
+
+def dumps(obj, **kwargs):
+    return json.dumps(obj, cls=JSONDataEncoder, **kwargs)
+
+
+def asdict(obj):
+    return json.loads(dumps(obj))
 
 
 def jsondata(CLASS):
@@ -209,9 +210,9 @@ def jsondata(CLASS):
     CLASS.__iter__ = impl__iter__
     CLASS.__eq__ = impl__eq__
     CLASS.__hash__ = impl__hash__
-    CLASS.dumps = lambda self, **kwargs: json.dumps(
-        self, cls=JSONDataEncoder, **kwargs)
-    CLASS.asdict = lambda self: json.loads(self.dumps())
+    CLASS.dumps = dumps
+    CLASS.asdict = asdict
     CLASS.default = impl__default__(CLASS)
     return CLASS
+
 
