@@ -1,5 +1,4 @@
-
-from jsondata import jsondata
+from src.modules.jsondata import jsondata
 
 
 @jsondata

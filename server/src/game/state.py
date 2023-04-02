@@ -1,9 +1,9 @@
-
-from jsondata import jsondata
+from src.modules.jsondata import jsondata
 from typing import Dict, List
-from board import Board
-from player import Player
-from event import Event
+from src.game.board import Board
+from src.game.player import Player
+from src.game.event import Event
+
 
 @jsondata
 class State:
@@ -13,4 +13,3 @@ class State:
     playerTurnId: str
     turnNumber: int
     history: List[Event]
-

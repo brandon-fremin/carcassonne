@@ -1,0 +1,4 @@
+2023-04-02T17:29:16.137571-04:00 INFO  main.py::<module>::19 Hello World
+2023-04-02T17:29:16.265478-04:00 INFO  timer.py::wrapper::42 Function 'wrapper' took 127.000 ms
+2023-04-02T17:29:16.266470-04:00 WARN  timer.py::wrapper::42 Function 'wrapper' took 128.139 ms
+2023-04-02T17:29:16.267481-04:00 ERROR timer.py::wrapper::42 Function 'wrapper' took 129.143 ms

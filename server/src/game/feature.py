@@ -1,6 +1,6 @@
-from typing import List, Dict
-from meeple import Meeple
-from jsondata import jsondata
+from typing import List
+from src.game.meeple import Meeple
+from src.modules.jsondata import jsondata
 
 
 @jsondata

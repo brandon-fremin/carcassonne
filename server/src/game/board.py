@@ -1,5 +1,5 @@
-from jsondata import jsondata
-from tile import Tile
+from src.modules.jsondata import jsondata
+from src.game.tile import Tile
 from typing import Dict
 
 @jsondata

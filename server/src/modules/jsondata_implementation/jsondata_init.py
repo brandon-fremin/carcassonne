@@ -1,37 +1,7 @@
-import json
 import copy
-import hashlib
+from datetime import datetime
+from src.modules.jsondata_implementation.jsondata_encoder import JSONDataEncoder, asdict
 from typing import Union, Optional
-
-
-class JSONDataEncoder(json.JSONEncoder):
-    @staticmethod
-    def is_union_type(type_hint):
-        return ("__origin__" in dir(type_hint) and type_hint.__origin__ is Union)
-
-    @staticmethod
-    def get_union_key(data_field):
-        union_key = data_field.__name__
-        return union_key[0].lower() + union_key[1:]
-
-    def default(self, obj):
-        if "__iter__" in dir(obj) and "__annotations__" in dir(obj):
-            data = dict(obj)
-            for field, type_hint in obj.__annotations__.items():
-                if JSONDataEncoder.is_union_type(type_hint):
-                    union_key = JSONDataEncoder.get_union_key(
-                        type(data[field]))
-                    data[field] = {union_key: data[field]}
-            return data
-        return super().default(obj)
-
-
-def dumps(obj, **kwargs) -> str:
-    return json.dumps(obj, cls=JSONDataEncoder, **kwargs)
-
-
-def asdict(obj) -> dict:
-    return json.loads(dumps(obj))
 
 
 def extract_kwargs(obj, *args, **kwargs):
@@ -116,6 +86,8 @@ def parse_optional_arg(arg, type_hint):
 
 def parse_arg(arg, type_hint):
     cls = type_hint
+    if cls is datetime and type(arg) is str:
+        return datetime.fromisoformat(arg)
     return cls(arg)
 
 
@@ -155,7 +127,7 @@ def default(type_hint):
         return type_hint()
 
 
-def impl__init__(self, *args, **kwargs):
+def jsondata__init__(self, *args, **kwargs):
     try:
         kwargs = extract_kwargs(self, *args, **kwargs)
         for field, type_hint in self.__annotations__.items():
@@ -165,38 +137,19 @@ def impl__init__(self, *args, **kwargs):
             self.__setattr__(field, value)
     except Exception as e:
         raise Exception(f"Error initializing {self.__class__} -> {str(e)}")
+    
 
+def jsondata__init__factory(CLASS):
+    # If no constructor is explicitly defined, use jsondata contructor
+    if CLASS.__init__ == object.__init__:
+        return jsondata__init__
 
-def impl__repr__(self):
-    kw = [f"{k}={v!r}" for k, v in iter(self)]
-    kw_str = ", ".join(kw)
-    return f"{type(self).__name__}({kw_str})"
-
-
-def impl__iter__(self):
-    keys = self.__annotations__.keys()
-    for key in keys:
-        value = self.__dict__[key]
-        yield key, value
-
-
-def impl__eq__(self, other):
-    return all([
-        self.__dict__[k] == other.__dict__[k]
-        for k, _ in iter(self)
-    ])
-
-
-def impl__hash__(self):
-    m = hashlib.sha256()
-    m.update(dumps(self).encode())
-    return int(m.hexdigest(), 16)
-
-
-def jsondata(CLASS):
-    CLASS.__init__ = impl__init__
-    CLASS.__repr__ = impl__repr__
-    CLASS.__iter__ = impl__iter__
-    CLASS.__eq__ = impl__eq__
-    CLASS.__hash__ = impl__hash__
-    return CLASS
+    # Try class constructor, failover to jsondata constructor
+    original__init__ = CLASS.__init__  # store reference to orignal implementation
+    def __init__wrapper(self, *args, **kwargs):
+        try:
+            original__init__(self, *args, **kwargs)
+        except TypeError:
+            jsondata__init__(self, *args, **kwargs)
+    return __init__wrapper
+        

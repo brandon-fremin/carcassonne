@@ -1,8 +1,7 @@
-
-from jsondata import jsondata
-from sides import Sides
-from transform import Transform
-from feature import Feature
+from src.modules.jsondata import jsondata
+from src.game.sides import Sides
+from src.game.transform import Transform
+from src.game.feature import Feature
 from typing import List
 
 
