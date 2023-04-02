@@ -47,6 +47,7 @@ class ColorizedLogWriter(StdoutLogWriter):
         self.formatter = colorized_formatter
         super().__init__(level)
 
+    @staticmethod
     def stdout_colorize(s: str, level: str) -> str:
         if level in [WARN]:
             return Fore.YELLOW + s + Style.RESET_ALL

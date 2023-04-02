@@ -1,7 +1,36 @@
 import copy
 from datetime import datetime
-from src.modules.jsondata_implementation.jsondata_encoder import JSONDataEncoder, asdict
+from src.modules.jsondata_implementation.jsondata_encoder \
+    import JSONDataEncoder, asdict
 from typing import Union, Optional
+from enum import Enum
+
+
+def validate_no_extra_keys(obj, kwargs):
+    kwargs_keys = set(kwargs.keys())
+    annotation_keys = set(obj.__annotations__.keys())
+    extra_keys = list(kwargs_keys.difference(annotation_keys))
+    if len(extra_keys) > 0:
+        raise Exception(
+            f"kwargs must only have keys in class!"
+            f" kwargs={kwargs} annotations={obj.__annotations__}"
+            f" extra_keys={extra_keys}")
+
+
+def validate_no_missing_keys(obj, kwargs):
+    kwargs_keys = set(kwargs.keys())
+    annotation_keys = set(obj.__annotations__.keys())
+
+    def is_required(key):
+        type_hint = obj.__annotations__.get(key)
+        return not JSONDataEncoder.is_optional_type(type_hint)
+    missing_keys = list(filter(
+        is_required, list(annotation_keys.difference(kwargs_keys))))
+    if len(missing_keys) > 0:
+        raise Exception(
+            f"Missing required fields in constructor!"
+            f" kwargs={kwargs} annotations={obj.__annotations__}"
+            f" missing_keys={missing_keys}")
 
 
 def extract_kwargs(obj, *args, **kwargs):
@@ -25,15 +54,14 @@ def extract_kwargs(obj, *args, **kwargs):
         kwargs = asdict(kwargs)
 
     if type(kwargs) is not dict:
-        raise Exception(
-            f"kwargs must be of type dict, not {type(kwargs).__name__}! kwargs={kwargs}")
+        raise Exception(f"kwargs must be of type dict, not "
+                        f"{type(kwargs).__name__}! kwargs={kwargs}")
 
-    extra_keys = list(set(kwargs.keys()).difference(
-        set(obj.__annotations__.keys())))
-    if len(extra_keys) > 0:
-        raise Exception(
-            f"kwargs must only have keys in class!"
-            f" kwargs={kwargs} annotation={obj.__annotations__} extra_keys={extra_keys}")
+    validate_no_extra_keys(obj, kwargs)
+    validate_no_missing_keys(obj, kwargs)
+
+    for key, _ in obj.__annotations__.items():
+        kwargs[key] = kwargs.get(key, None)
 
     return copy.deepcopy(kwargs)
 
@@ -57,7 +85,7 @@ def parse_dict_arg(arg, type_hint):
             f"Only str type Dict keys are supported! key_cls={key_cls.__name__}")
     new_type_hint = type_hint.__args__[1]
     return {
-        key_cls(k): recursive_parse_args(new_arg, new_type_hint)
+        parse_arg(k, key_cls): recursive_parse_args(new_arg, new_type_hint)
         for k, new_arg in arg.items()
     }
 
@@ -81,18 +109,18 @@ def parse_union_arg(arg, type_hint):
 
 
 def parse_optional_arg(arg, type_hint):
-    raise Exception("Not Implemented")
+    if arg is None:
+        return arg
+    new_type_hint = type_hint.__args__[0]
+    return recursive_parse_args(arg, new_type_hint)
 
 
 def parse_arg(arg, type_hint):
-    cls = type_hint
-    if cls is datetime and type(arg) is str:
-        return datetime.fromisoformat(arg)
-    return cls(arg)
+    return JSONDataEncoder.deserialize(arg, type_hint)
 
 
 def recursive_parse_args(arg, type_hint):
-    if "__origin__" in dir(type_hint):
+    if JSONDataEncoder.has_origin(type_hint):
         origin = type_hint.__origin__
         if origin is list:
             return parse_list_arg(arg, type_hint)
@@ -110,19 +138,19 @@ def recursive_parse_args(arg, type_hint):
 
 
 def default(type_hint):
-    if "__origin__" in dir(type_hint):
-        origin = type_hint.__origin__
-        if origin is list:
-            return []
-        elif origin is dict:
-            return {}
-        elif origin is Union:
-            return None
-        elif origin is Optional:
-            return None
-        else:
-            raise Exception(
-                f"Cannot parse type_origin={origin} as default")
+    if JSONDataEncoder.is_list_type(type_hint):
+        return []
+    elif JSONDataEncoder.is_dict_type(type_hint):
+        return {}
+    elif JSONDataEncoder.is_union_type(type_hint):
+        return None
+    elif JSONDataEncoder.is_optional_type(type_hint):
+        return None
+    elif JSONDataEncoder.is_datetime_type(type_hint):
+        return datetime.now().astimezone()
+    elif JSONDataEncoder.is_enum_type(type_hint):
+        first_enum = list(type_hint._member_map_.values())[0]
+        return type_hint(first_enum)
     else:
         return type_hint()
 
@@ -137,7 +165,7 @@ def jsondata__init__(self, *args, **kwargs):
             self.__setattr__(field, value)
     except Exception as e:
         raise Exception(f"Error initializing {self.__class__} -> {str(e)}")
-    
+
 
 def jsondata__init__factory(CLASS):
     # If no constructor is explicitly defined, use jsondata contructor
@@ -146,10 +174,10 @@ def jsondata__init__factory(CLASS):
 
     # Try class constructor, failover to jsondata constructor
     original__init__ = CLASS.__init__  # store reference to orignal implementation
+
     def __init__wrapper(self, *args, **kwargs):
         try:
             original__init__(self, *args, **kwargs)
         except TypeError:
             jsondata__init__(self, *args, **kwargs)
     return __init__wrapper
-        

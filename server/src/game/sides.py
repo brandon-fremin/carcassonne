@@ -1,9 +1,17 @@
 from src.modules.jsondata import jsondata
+from enum import Enum
+
+
+class Side(Enum):
+    ROAD: str = "R"
+    CITY: str = "C"
+    FIELD: str = "F"
+
 
 
 @jsondata
 class Sides:
-    left: str
-    right: str
-    top: str
-    bottom: str
+    left: Side
+    right: Side
+    top: Side
+    bottom: Side
