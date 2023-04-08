@@ -1,5 +1,5 @@
-import hashlib
 from src.modules.jsondata_implementation.jsondata_encoder import dumps
+from src.modules.hash import sha256
 
 
 def jsondata__str__(self):
@@ -22,6 +22,8 @@ def jsondata__iter__(self):
 
 
 def jsondata__eq__(self, other):
+    if type(self) is not type(other):
+        return False
     return all([
         self.__dict__[k] == other.__dict__[k]
         for k, _ in iter(self)
@@ -29,6 +31,5 @@ def jsondata__eq__(self, other):
 
 
 def jsondata__hash__(self):
-    m = hashlib.sha256()
-    m.update(dumps(self).encode())
-    return int(m.hexdigest(), 16)
+    hex = sha256(dumps(self))
+    return int(hex, 16)

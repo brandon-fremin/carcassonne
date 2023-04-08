@@ -1,0 +1,53 @@
+import basic_v2_FFFR_M_XF12345678_N2H_tile from './basic_v2_FFFR_M_XF12345678_N2H.jpg'
+import basic_v2_FFFF_M_XF12345678_N4FD_tile from './basic_v2_FFFF_M_XF12345678_N4FD.jpg'
+import basic_v2_CCCC_S_XC1234_N1W_tile from './basic_v2_CCCC_S_XC1234_N1W.jpg'
+import basic_v2_RCRF_XR13_XF14_XF5678_N4FP_start_tile from './basic_v2_RCRF_XR13_XF14_XF5678_N4FP_start.jpg'
+import basic_v2_FCFF_XF145678_N5GFW_tile from './basic_v2_FCFF_XF145678_N5GFW.jpg'
+import basic_v2_CFCF_S_XC13_XF23_XF67_N2W_tile from './basic_v2_CFCF_S_XC13_XF23_XF67_N2W.jpg'
+import basic_v2_CFCF_XC13_XF23_XF67_N1_tile from './basic_v2_CFCF_XC13_XF23_XF67_N1.jpg'
+import basic_v2_CFCF_XF2367_N3GW_tile from './basic_v2_CFCF_XF2367_N3GW.jpg'
+import basic_v2_CCFF_XF4567_N2G_tile from './basic_v2_CCFF_XF4567_N2G.jpg'
+import basic_v2_RCFR_XR14_XF1456_XF78_N3HFC_tile from './basic_v2_RCFR_XR14_XF1456_XF78_N3HFC.jpg'
+import basic_v2_FCRR_XR34_XF1478_XF56_N3HFD_tile from './basic_v2_FCRR_XR34_XF1478_XF56_N3HFD.jpg'
+import basic_v2_RCRR_XF14_XF56_XF78_N3_tile from './basic_v2_RCRR_XF14_XF56_XF78_N3.jpg'
+import basic_v2_CCFF_S_XC12_XF3456_N2G_tile from './basic_v2_CCFF_S_XC12_XF3456_N2G.jpg'
+import basic_v2_CCFF_XC12_XF3456_N3GW_tile from './basic_v2_CCFF_XC12_XF3456_N3GW.jpg'
+import basic_v2_RCCR_S_XC23_XR14_XF16_XF78_N2FC_tile from './basic_v2_RCCR_S_XC23_XR14_XF16_XF78_N2FC.jpg'
+import basic_v2_RCCR_XC23_XR14_XF16_XF78_N3HW_tile from './basic_v2_RCCR_XC23_XR14_XF16_XF78_N3HW.jpg'
+import basic_v2_CCCF_S_XC123_XF67_N1_tile from './basic_v2_CCCF_S_XC123_XF67_N1.jpg'
+import basic_v2_CCCF_XC123_XF67_N3GW_tile from './basic_v2_CCCF_XC123_XF67_N3GW.jpg'
+import basic_v2_CCCR_S_XC123_N2W_tile from './basic_v2_CCCR_S_XC123_N2W.jpg'
+import basic_v2_CCCR_XC123_N1_tile from './basic_v2_CCCR_XC123_N1.jpg'
+import basic_v2_FRFR_XR24_XF1278_XF3456_N8GHHFP_tile from './basic_v2_FRFR_XR24_XF1278_XF3456_N8GHHFP.jpg'
+import basic_v2_FFRR_XR34_XF123478_XF56_N9GHHFPC_tile from './basic_v2_FFRR_XR34_XF123478_XF56_N9GHHFPC.jpg'
+import basic_v2_RFRR_XF1234_XF56_XF78_N4_tile from './basic_v2_RFRR_XF1234_XF56_XF78_N4.jpg'
+import basic_v2_RRRR_XF12_XF34_XF56_XF78_N1_tile from './basic_v2_RRRR_XF12_XF34_XF56_XF78_N1.jpg'
+
+const IMAGE_MAP = {
+	basic_v2_FFFR_M_XF12345678_N2H: basic_v2_FFFR_M_XF12345678_N2H_tile,
+	basic_v2_FFFF_M_XF12345678_N4FD: basic_v2_FFFF_M_XF12345678_N4FD_tile,
+	basic_v2_CCCC_S_XC1234_N1W: basic_v2_CCCC_S_XC1234_N1W_tile,
+	basic_v2_RCRF_XR13_XF14_XF5678_N4FP_start: basic_v2_RCRF_XR13_XF14_XF5678_N4FP_start_tile,
+	basic_v2_FCFF_XF145678_N5GFW: basic_v2_FCFF_XF145678_N5GFW_tile,
+	basic_v2_CFCF_S_XC13_XF23_XF67_N2W: basic_v2_CFCF_S_XC13_XF23_XF67_N2W_tile,
+	basic_v2_CFCF_XC13_XF23_XF67_N1: basic_v2_CFCF_XC13_XF23_XF67_N1_tile,
+	basic_v2_CFCF_XF2367_N3GW: basic_v2_CFCF_XF2367_N3GW_tile,
+	basic_v2_CCFF_XF4567_N2G: basic_v2_CCFF_XF4567_N2G_tile,
+	basic_v2_RCFR_XR14_XF1456_XF78_N3HFC: basic_v2_RCFR_XR14_XF1456_XF78_N3HFC_tile,
+	basic_v2_FCRR_XR34_XF1478_XF56_N3HFD: basic_v2_FCRR_XR34_XF1478_XF56_N3HFD_tile,
+	basic_v2_RCRR_XF14_XF56_XF78_N3: basic_v2_RCRR_XF14_XF56_XF78_N3_tile,
+	basic_v2_CCFF_S_XC12_XF3456_N2G: basic_v2_CCFF_S_XC12_XF3456_N2G_tile,
+	basic_v2_CCFF_XC12_XF3456_N3GW: basic_v2_CCFF_XC12_XF3456_N3GW_tile,
+	basic_v2_RCCR_S_XC23_XR14_XF16_XF78_N2FC: basic_v2_RCCR_S_XC23_XR14_XF16_XF78_N2FC_tile,
+	basic_v2_RCCR_XC23_XR14_XF16_XF78_N3HW: basic_v2_RCCR_XC23_XR14_XF16_XF78_N3HW_tile,
+	basic_v2_CCCF_S_XC123_XF67_N1: basic_v2_CCCF_S_XC123_XF67_N1_tile,
+	basic_v2_CCCF_XC123_XF67_N3GW: basic_v2_CCCF_XC123_XF67_N3GW_tile,
+	basic_v2_CCCR_S_XC123_N2W: basic_v2_CCCR_S_XC123_N2W_tile,
+	basic_v2_CCCR_XC123_N1: basic_v2_CCCR_XC123_N1_tile,
+	basic_v2_FRFR_XR24_XF1278_XF3456_N8GHHFP: basic_v2_FRFR_XR24_XF1278_XF3456_N8GHHFP_tile,
+	basic_v2_FFRR_XR34_XF123478_XF56_N9GHHFPC: basic_v2_FFRR_XR34_XF123478_XF56_N9GHHFPC_tile,
+	basic_v2_RFRR_XF1234_XF56_XF78_N4: basic_v2_RFRR_XF1234_XF56_XF78_N4_tile,
+	basic_v2_RRRR_XF12_XF34_XF56_XF78_N1: basic_v2_RRRR_XF12_XF34_XF56_XF78_N1_tile,
+}
+
+export default IMAGE_MAP

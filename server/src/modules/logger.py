@@ -9,26 +9,12 @@ from typing import List
 
 
 GLOBAL_LOGGER = Logger()
-
-
-def debug(s: str, frame: FrameInfo = None):
-    GLOBAL_LOGGER.debug(s, frame if frame else FRAME(1))
-
-
-def info(s: str, frame: FrameInfo = None):
-    GLOBAL_LOGGER.info(s, frame if frame else FRAME(1))
-
-
-def warn(s: str, frame: FrameInfo = None):
-    GLOBAL_LOGGER.warn(s, frame if frame else FRAME(1))
-
-
-def error(s: str, frame: FrameInfo = None):
-    GLOBAL_LOGGER.error(s, frame if frame else FRAME(1))
-
-
-def fatal(s: str, frame: FrameInfo = None):
-    GLOBAL_LOGGER.fatal(s, frame if frame else FRAME(1))
+debug = GLOBAL_LOGGER.debug
+info = GLOBAL_LOGGER.info
+warn = GLOBAL_LOGGER.warn
+error = GLOBAL_LOGGER.error
+fatal = GLOBAL_LOGGER.fatal
+flush = GLOBAL_LOGGER.flush
 
 
 def initialize(logWriters: List[LogWriter] = None):

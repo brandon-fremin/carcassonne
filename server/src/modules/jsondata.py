@@ -1,7 +1,12 @@
 # DO NOT REMOVE IMPORTS, they forward to other modules!
 from src.modules.jsondata_implementation.jsondata_init import jsondata__init__factory
 import src.modules.jsondata_implementation.jsondata_helper as jsondata_helper
-from src.modules.jsondata_implementation.jsondata_encoder import dumps, asdict
+from src.modules.jsondata_implementation.jsondata_encoder import dumps, asdict, JSONDataEncoder
+from enum import Enum
+from typing import List, Dict, Union, Optional
+
+
+enum_options = JSONDataEncoder.enum_options
 
 
 def jsondata(CLASS):

@@ -120,19 +120,14 @@ def parse_arg(arg, type_hint):
 
 
 def recursive_parse_args(arg, type_hint):
-    if JSONDataEncoder.has_origin(type_hint):
-        origin = type_hint.__origin__
-        if origin is list:
-            return parse_list_arg(arg, type_hint)
-        elif origin is dict:
-            return parse_dict_arg(arg, type_hint)
-        elif origin is Union:
-            return parse_union_arg(arg, type_hint)
-        elif origin is Optional:
-            return parse_optional_arg(arg, type_hint)
-        else:
-            raise Exception(
-                f"Cannot parse arg={arg} with type_origin={origin}")
+    if JSONDataEncoder.is_list_type(type_hint):
+        return parse_list_arg(arg, type_hint)
+    elif JSONDataEncoder.is_dict_type(type_hint):
+        return parse_dict_arg(arg, type_hint)
+    elif JSONDataEncoder.is_union_type(type_hint):
+        return parse_union_arg(arg, type_hint)
+    elif JSONDataEncoder.is_optional_type(type_hint):
+        return parse_optional_arg(arg, type_hint)
     else:
         return parse_arg(arg, type_hint)
 
@@ -149,8 +144,7 @@ def default(type_hint):
     elif JSONDataEncoder.is_datetime_type(type_hint):
         return datetime.now().astimezone()
     elif JSONDataEncoder.is_enum_type(type_hint):
-        first_enum = list(type_hint._member_map_.values())[0]
-        return type_hint(first_enum)
+        return type_hint(JSONDataEncoder.enum_options(type_hint)[0])
     else:
         return type_hint()
 
@@ -178,6 +172,6 @@ def jsondata__init__factory(CLASS):
     def __init__wrapper(self, *args, **kwargs):
         try:
             original__init__(self, *args, **kwargs)
-        except TypeError:
+        except (TypeError, AssertionError):
             jsondata__init__(self, *args, **kwargs)
     return __init__wrapper

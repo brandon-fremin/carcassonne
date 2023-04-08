@@ -1,13 +1,29 @@
 import { useDispatch, useSelector } from 'react-redux';
+import React, {useState} from 'react'
 import { ACTIONS } from '../state/reducer'
 import Tile, { TILE_CLASS } from './tile';
 import IMAGE_MAP from '../assets/tiles/tileimages';
 
+function request(data={}) {
+  return {
+    method: "PUT",
+    headers: { 'Content-Type': 'application/json' }, 
+    body: JSON.stringify(data)
+  }
+}
+
 export default function Interaction() {
   const dispatch = useDispatch();
 
+  const sessionId = useSelector((state) => state.sessionId)
+  const [sid, setSid] = useState(sessionId ? sessionId : '')
+  const settings = useSelector((state) => state.defaultGameSettings)
   const nextTile = useSelector((state) => state.nextTile)
   const legalMoves = useSelector((state) => state.legalMoves)
+
+  const handleInputChange = (event) => {
+    setSid(event.target.value);
+  };
 
   const handleClick = () => {
     dispatch({
@@ -35,34 +51,40 @@ export default function Interaction() {
     nextTile.i === null ?
     <Tile className={TILE_CLASS.FULL} rotation={nextTile?.rot} image={IMAGE_MAP[nextTile?.image]}/> :
     <Tile className={TILE_CLASS.ADJACENT} handleClick={handleClick}/>
+
+  const getGameSettings = () => {
+    fetch("/getGameSettings", request())
+      .then(async (res) => {
+        const response = await res.json()
+        console.log(response)
+        dispatch({
+          type: ACTIONS.DEFAULT_GAME_SETTINGS,
+          payload: response
+        })
+      })
+  }
   
-  const fetchBoard = () => {
-    fetch("/getState", 
-      {
-        method: "PUT",
-        headers: { 'Content-Type': 'application/json' }, 
-        body: JSON.stringify({})
-      }
+  const getGame = () => {
+    fetch("/getGame", request({sessionId: sid})
     ).then(async (res) => {
       const response = await res.json()
       console.log(response)
       dispatch({
-        type: ACTIONS.UPDATE_BOARD,
+        type: ACTIONS.SET_GAME,
         payload: response
       })
     })
   }
 
   const newGame = () => {
-    fetch("/newGame", 
-      {
-        method: "PUT",
-        headers: { 'Content-Type': 'application/json' }, 
-        body: JSON.stringify({})
-      }
-    ).then(async (res) => {
+    fetch("/newGame", request({settings: settings})).then(async (res) => {
       const response = await res.json()
       console.log(response)
+      dispatch({
+        type: ACTIONS.SET_SESSION_ID,
+        payload: response
+      })
+      setSid(response.sessionId)
     })
   }
 
@@ -92,12 +114,26 @@ export default function Interaction() {
 
   return (
     <div style={{display: "flex", flexDirection: "column", alignItems: "center", gap: "5px"}}>
-      <button onClick={newGame}>
-        New Game
+       <button onClick={getGameSettings}>
+        Get Game Settings
       </button>
-      <button onClick={fetchBoard}>
-        Fetch Board
-      </button>
+      <div style={{display: "flex"}}>
+        <button  onClick={newGame}>
+          New Game
+        </button>
+        <div>
+          {sessionId}
+        </div>
+      </div>
+      <div style={{display: "flex"}}>
+        <button onClick={getGame}>
+          Get Game
+        </button>
+        <input
+          value={sid}
+          onChange={handleInputChange}
+        />
+      </div>
       {nextTileDiv}
       <div style={{display: "flex", flexDirection: "row", gap: "10px"}}>
         <button onClick={rotateCW}>CW</button>
