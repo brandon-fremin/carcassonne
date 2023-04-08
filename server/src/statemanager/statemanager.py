@@ -69,7 +69,7 @@ class StateManager:
 
     def __handle_make_move_event(self, event: Event):
         assert type(event.payload) is MakeMoveEvent
-        self.game.board
+        self.game.board.make_move(event.payload.move, self.random)
 
     def __handle(self, event: Event):
         logger.info(

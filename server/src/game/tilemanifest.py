@@ -43,7 +43,7 @@ DEFAULT_TILE = {
 
 
 def basicV2(code):
-    return f"basic_v2_{code}.jpg"
+    return f"basic_v2_{code}"
 
 
 def monastery() -> Feature:
@@ -455,7 +455,7 @@ def tile_manifest() -> List[Tile]:
     ##########################################################################
     TILE_M = Tile()
     TILE_M.image = basicV2("M")
-    TILE_M.sides.right = TILE_M.sides.top = Side.Road
+    TILE_M.sides.right = TILE_M.sides.top = Side.City
     TILE_M.sides.left = TILE_M.sides.bottom = Side.Field
     TILE_M.numShields = 1
     TILE_M.features.append(right_top_city())

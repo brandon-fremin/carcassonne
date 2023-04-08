@@ -41,4 +41,5 @@ class Feature:
     placeables: List[Meeple]
 
     def rotate_90deg_ccw(self):
-        logger.warn("Feature.rotate_90deg_ccw() not implemented!")
+        pass
+        #logger.warn("Feature.rotate_90deg_ccw() not implemented!")

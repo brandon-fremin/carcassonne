@@ -1,5 +1,4 @@
 import handleBoardResize from "./handlers/handleboardresize"
-import handlePreviewPlacement from "./handlers/handlepreviewplacement";
 import handleUpdateBoard from "./handlers/handleupdateboard";
 
 export const ACTIONS = {
@@ -29,15 +28,28 @@ const handleSetSessionId = (state, payload) => {
 const handleSetGame = (state, payload) => {
   let newState = {...state}
   newState.game = payload
+  newState.game.board.nextTile.transform.i = null
+  newState.game.board.nextTile.transform.j = null
   return newState
 }
 
 const handleRotateNextTile = (state, payload) => {
   const { isClockwise } = payload
   let newState = { ...state }
-  newState.nextTile =  { ...state.nextTile }
-  const rot = newState.nextTile.rot + 90 * (isClockwise ? -1 : 1)
-  newState.nextTile.rot = (rot + 360) % 360
+  let newNextTile = { ...state.game.board.nextTile }
+  const rot = newNextTile.transform.rot + 90 * (isClockwise ? -1 : 1)
+  newNextTile.transform.rot = (rot + 360) % 360
+  newState.game.board.nextTile = newNextTile
+  return newState
+}
+
+const handlePreviewPlacement = (state, payload) => {
+  const { i, j } = payload
+  let newState = { ...state }
+  let newNextTile = { ...state.game.board.nextTile }
+  newNextTile.transform.i = i
+  newNextTile.transform.j = j
+  newState.game.board.nextTile = newNextTile
   return newState
 }
 
@@ -47,12 +59,12 @@ const handler = (state, action) => {
       return handleBoardResize(state, action.payload)
     case ACTIONS.UPDATE_BOARD:
       return handleUpdateBoard(state, action.payload)
+
+
     case ACTIONS.PREVIEW_PLACEMENT:
       return handlePreviewPlacement(state, action.payload)
     case ACTIONS.ROTATE_NEXT_TILE:
       return handleRotateNextTile(state, action.payload)
-    
-
     case ACTIONS.DEFAULT_GAME_SETTINGS:
       return handleDefaultGameSettings(state, action.payload)
     case ACTIONS.SET_SESSION_ID:

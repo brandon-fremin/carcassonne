@@ -54,7 +54,7 @@ class Board:
                     self.drawStack.append(tile)
         # populates: nextTile, frontier, and legalMoves
         self.update_next_tile(random)
-        
+
         logger.info(f"Board initialized from settings: {self.board_stats()}")
 
     def update_next_tile(self, random: PsuedoRandom):
@@ -68,11 +68,10 @@ class Board:
         assert move.tileId == self.nextTile.id
 
         # put palced tile on board
-        placed_tile = next(
-            filter(lambda t: t.id == move.tileId, self.drawStack))
-        self.drawStack.remove(placed_tile)
-        placed_tile.transform = move.transform
-        self.tiles[placed_tile.id] = placed_tile
+        self.nextTile.rotate_ccw(move.transform.rot)
+        self.nextTile.transform = move.transform
+        self.tiles[self.nextTile.id] = self.nextTile
+        self.nextTile = None
 
         # reset unplayable stack
         self.drawStack.extend(self.unplayableStack)
@@ -80,6 +79,8 @@ class Board:
 
         # populates: nextTile, frontier, and legalMoves
         self.update_next_tile(random)
+
+        logger.info(f"Board updated: {self.board_stats()}")
 
     def board_stats(self):
         n_total = (len(self.tiles) + len(self.drawStack) +
@@ -111,7 +112,6 @@ class Board:
             return r is None or l is None or r.sides.left == l.sides.right
 
         def is_legal(i: int, j: int) -> bool:
-
             left = find(i - 1, j)
             right = find(i + 1, j)
             bottom = find(i, j - 1)
@@ -139,8 +139,10 @@ class Board:
     def calculate_frontier(self):
         if len(self.frontier) == 0:
             self.frontier = [Node(i=0, j=0)]
+        for node in self.frontier:
+            node.isSearched = False
 
-        def find(i, j) -> bool:
+        def find(i: int, j: int) -> bool:
             for tile in self.tiles.values():
                 if tile.transform.i == i and tile.transform.j == j:
                     return True

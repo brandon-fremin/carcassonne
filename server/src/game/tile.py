@@ -16,8 +16,7 @@ class Tile:
     isGarden: bool
 
     def type(self) -> str:
-        assert self.image.count(".") == 1
-        return self.image.split(".")[0]
+        return self.image
     
     def rotate_90deg_ccw(self):
         self.sides.right, self.sides.top, self.sides.left, self.sides.bottom = \
@@ -25,4 +24,9 @@ class Tile:
         self.transform.rot = (self.transform.rot + 90) % 360
         for feature in self.features:
             feature.rotate_90deg_ccw()
+
+    def rotate_ccw(self, deg):
+        assert deg % 90 == 0
+        for _ in range(deg // 90):
+            self.rotate_90deg_ccw()
 
