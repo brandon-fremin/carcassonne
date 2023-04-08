@@ -3,11 +3,7 @@ import thunk from "redux-thunk"
 import globalStateReducer from "./reducer"
 
 const INITIAL_STATE = {
-  numRows: 1,
-  numCols: 1,
-  board: [],
-  legalMoves: [],
-  nextTile: undefined
+  version: 0
 }
 
 const REDUX_STORE = createStore(

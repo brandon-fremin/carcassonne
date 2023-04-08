@@ -80,10 +80,12 @@ def fetch_image(name, url, c):
     img.save(filename)
 
 names = []
+c = "A"
 for game_key, game_val in CARDS.items():
     for version_key, version_val in game_val.items():
         for key, img_url in version_val.items():
-            name = f"{game_key}_{version_key}_{key}"
+            name = f"{game_key}_{version_key}_{c}"
+            c = chr(ord(c) + 1)
             fetch_image(name, img_url, CROP)
             names.append(name)
 

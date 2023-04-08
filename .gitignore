@@ -21,3 +21,14 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+
+# pycache artifacts
+**/__pycache__
+
+# session artifacts
+**/state/session.*.json
+
+# slogfiles
+**/output.txt
+**/output.debug.txt
