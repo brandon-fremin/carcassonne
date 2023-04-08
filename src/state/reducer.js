@@ -1,13 +1,6 @@
-import handleBoardResize from "./handlers/handleboardresize"
-import handleUpdateBoard from "./handlers/handleupdateboard";
-
 export const ACTIONS = {
-  BOARD_RESIZE: "BOARD_RESIZE",
-  UPDATE_BOARD: "UPDATE_BOARD",
   PREVIEW_PLACEMENT: "PREVIEW_PLACEMENT",
   ROTATE_NEXT_TILE: "ROTATE_NEXT_TILE",
-
-  // New ones below
   DEFAULT_GAME_SETTINGS: "DEFAULT_GAME_SETTINGS",
   SET_SESSION_ID: "SET_SESSION_ID",
   SET_GAME: "SET_GAME"
@@ -55,12 +48,6 @@ const handlePreviewPlacement = (state, payload) => {
 
 const handler = (state, action) => {
   switch (action.type) {
-    case ACTIONS.BOARD_RESIZE:
-      return handleBoardResize(state, action.payload)
-    case ACTIONS.UPDATE_BOARD:
-      return handleUpdateBoard(state, action.payload)
-
-
     case ACTIONS.PREVIEW_PLACEMENT:
       return handlePreviewPlacement(state, action.payload)
     case ACTIONS.ROTATE_NEXT_TILE:
