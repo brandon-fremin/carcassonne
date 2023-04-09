@@ -1,59 +1,57 @@
-from src.modules.jsondata import jsondata
+from src.modules.jsondata import jsondata, dumps
 from src.game.tile import Tile
-from src.game.transform import Transform
-from src.game.move import Move
 from src.game.settings import Settings
+from src.game.types import Meeple, Move, Transform
+from src.game.feature import Feature, Conn
+from src.game.component import Component
 from src.modules.psuedorandom import PsuedoRandom
 from typing import Dict, List, Optional
 import src.modules.logger as logger
-
-
-@jsondata
-class Node:
-    i: int
-    j: int
-    isSearched: bool
-    isFrontier: bool
-
-    def __init__(self, i: int, j: int):
-        assert type(i) is int
-        assert type(j) is int
-        self.i = i
-        self.j = j
-        self.isSearched = False
-        self.isFrontier = True
+from src.game.board_implementation.update_frontier import update_frontier, Node
+from src.game.board_implementation.update_legal_moves import update_legal_moves
 
 
 @jsondata
 class Board:
     nextTile: Optional[Tile]
+    lastTileId: Optional[str]
+    nextComponentIdx: int
     tiles: Dict[str, Tile]
     legalMoves: List[Move]
     drawStack: List[Tile]
     unplayableStack: List[Tile]
     frontier: List[Node]
+    components: List[Component]
 
     def __init__(self, settings: Settings, random: PsuedoRandom):
         assert type(settings) is Settings
+        assert type(random) is PsuedoRandom
 
         self.nextTile = None
+        self.lastTileId = None
+        self.nextComponentIdx = 0
         self.frontier = []
         self.tiles = {}
         self.legalMoves = []
         self.drawStack = []
         self.unplayableStack = []
+        self.components = []
         for template_tile, count in zip(settings.manifest, settings.counts):
             for i in range(count):
                 tile = Tile(template_tile)
-                tile_type = tile.type()
-                tile.id = f"{tile_type}_{i}"
-                if tile_type == settings.startTile.type() and len(self.tiles) == 0:
+                tile.id = f"{tile.image}_{i}"
+                if tile.image == settings.startTile.image and len(self.tiles) == 0:
                     tile.transform = Transform(i=0, j=0, rot=0)
-                    self.tiles[tile.id] = tile
+                    self.nextTile = tile
                 else:
                     self.drawStack.append(tile)
-        # populates: nextTile, frontier, and legalMoves
-        self.update_next_tile(random)
+                for feature in tile.features:
+                    feature.tileId = tile.id
+
+        # populates: nextTile, frontier, components, and legalMoves
+        self.place_tile(
+            Move(tileId=self.nextTile.id, transform=self.nextTile.transform),
+            random)
 
         logger.info(f"Board initialized from settings: {self.board_stats()}")
 
@@ -61,26 +59,55 @@ class Board:
         # populates: nextTile, frontier, and legalMoves
         self.nextTile = random.choice(self.drawStack)
         self.drawStack.remove(self.nextTile)
-        self.calculate_legal_moves()  # populates: frontier, legalMoves
+        self.update_legal_moves()  # populates: frontier, legalMoves
 
-    def make_move(self, move: Move, random: PsuedoRandom):
+    def redraw_tile(self, tileId: str, random: PsuedoRandom):
+        # verify inputs
+        assert type(tileId) is str
+        assert type(random) is PsuedoRandom
+        assert tileId == self.nextTile.id
+        assert len(self.legalMoves) == 0
+
+        # make next tile unplayable and redraw
+        self.unplayableStack.append(self.nextTile)
+        self.update_next_tile()
+
+        logger.info(f"Board.redraw_tile: {self.board_stats()}")
+
+    def place_tile(self, move: Move, random: PsuedoRandom):
+        # verify inputs
         assert type(move) is Move
+        assert type(random) is PsuedoRandom
         assert move.tileId == self.nextTile.id
 
-        # put palced tile on board
+        # put palced nextTile on board
         self.nextTile.rotate_ccw(move.transform.rot)
         self.nextTile.transform = move.transform
         self.tiles[self.nextTile.id] = self.nextTile
-        self.nextTile = None
+        self.lastTileId = self.nextTile.id
+        self.update_components()
 
-        # reset unplayable stack
+        # reset unplayable stack and get next tile
         self.drawStack.extend(self.unplayableStack)
         self.unplayableStack = []
-
-        # populates: nextTile, frontier, and legalMoves
         self.update_next_tile(random)
 
-        logger.info(f"Board updated: {self.board_stats()}")
+        logger.info(f"Board.place_tile: {self.board_stats()}")
+
+    def place_meeple(self, tileId: str, featureId: str, meeple: Meeple):
+        # verify inputs
+        assert type(tileId) is str
+        assert type(featureId) is str
+        assert tileId == self.lastTileId
+        lastTile = self.tiles[self.lastTileId]
+        assert any([f.id == featureId for f in lastTile.features])
+        feature = [f for f in lastTile.features if f.id == featureId][0]
+        assert feature.can_place_meeple(meeple)
+
+        # add meeple to feature
+        feature.meeples.append(meeple)
+
+        logger.info(f"Board.place_meeple: {self.board_stats()}")
 
     def board_stats(self):
         n_total = (len(self.tiles) + len(self.drawStack) +
@@ -95,81 +122,87 @@ class Board:
             f"nextTile.id={self.nextTile.id} ]"
         )
 
-    def calculate_legal_moves(self) -> dict:
-        assert type(self.nextTile) is Tile
-        self.calculate_frontier()
-
-        def find(i, j) -> bool:
+    def update_components(self):
+        def get(i: int, j: int):
             for tile in self.tiles.values():
                 if tile.transform.i == i and tile.transform.j == j:
                     return tile
             return None
 
-        def legal_top_bottom(t: Tile, b: Tile) -> bool:
-            return t is None or b is None or t.sides.bottom == b.sides.top
+        def neighbors(i: int, j: int):
+            return [
+                get(i + 1, j),  # right
+                get(i, j + 1),  # top
+                get(i - 1, j),  # left
+                get(i, j - 1)  # bottom
+            ]
+        
+        def union_right_left(right: Feature, left: Feature):
+            r_cons = right.connections
+            l_cons = left.connections
+            res = set()
+            if (
+                (Conn.LT in r_cons and Conn.RT in l_cons) or
+                (Conn.LM in r_cons and Conn.RM in l_cons) or
+                (Conn.LB in r_cons and Conn.RB in l_cons) 
+            ):
+                res.add(right.componentId)
+                res.add(left.componentId)
+            return res
 
-        def legal_right_left(r: Tile, l: Tile) -> bool:
-            return r is None or l is None or r.sides.left == l.sides.right
+        def union_top_bottom(top: Feature, bottom: Feature):
+            t_cons = top.connections
+            b_cons = bottom.connections
+            res = set()
+            if (
+                (Conn.BL in t_cons and Conn.TL in b_cons) or
+                (Conn.BM in t_cons and Conn.TM in b_cons) or
+                (Conn.BR in t_cons and Conn.TR in b_cons) 
+            ):
+                res.add(top.componentId)
+                res.add(bottom.componentId)
+            return res
 
-        def is_legal(i: int, j: int) -> bool:
-            left = find(i - 1, j)
-            right = find(i + 1, j)
-            bottom = find(i, j - 1)
-            top = find(i, j + 1)
-            return (
-                legal_right_left(self.nextTile, left) and
-                legal_right_left(right, self.nextTile) and
-                legal_top_bottom(self.nextTile, bottom) and
-                legal_top_bottom(top, self.nextTile)
-            )
 
-        rotations = [0, 90, 180, 270]
-        self.legalMoves = []
-        for node in self.frontier:
-            if node.isFrontier:
-                i, j = node.i, node.j
-                for rot in rotations:
-                    if is_legal(i, j):
-                        move = Move()
-                        move.tileId = self.nextTile.id
-                        move.transform = Transform(i=i, j=j, rot=rot)
-                        self.legalMoves.append(move)
-                    self.nextTile.rotate_90deg_ccw()
-
-    def calculate_frontier(self):
-        if len(self.frontier) == 0:
-            self.frontier = [Node(i=0, j=0)]
-        for node in self.frontier:
-            node.isSearched = False
-
-        def find(i: int, j: int) -> bool:
+        def meld_components(newId, componentIds):
             for tile in self.tiles.values():
-                if tile.transform.i == i and tile.transform.j == j:
-                    return True
-            return False
+                for feature in tile.features:
+                    if feature.componentId in componentIds:
+                        feature.componentId = newId
 
-        def expand(i: int, j: int) -> list[dict]:
-            # Make sure we don't already have this node
-            for node in self.frontier:
-                if node.i == i and node.j == j:
-                    return
-            # Add tile to frontier
-            self.frontier.append(Node(i=i, j=j))
 
-        n = 0
-        while len(self.frontier) > n:
-            n = len(self.frontier)
+        def assign_component(feature: Feature, tile: Tile):
+            right, top, left, bottom = neighbors(tile.transform.i, tile.transform.j)
+            componentIds = set()
+            if right:
+                for other_feature in right.features:
+                    componentIds = componentIds.union(union_right_left(other_feature, feature))
+            if left:
+                for other_feature in left.features:
+                    componentIds = componentIds.union(union_right_left(feature, other_feature))
+            if top:
+                for other_feature in top.features:
+                    componentIds = componentIds.union(union_top_bottom(other_feature, feature))
+            if bottom:
+                for other_feature in bottom.features:
+                    componentIds = componentIds.union(union_top_bottom(feature, other_feature))
+            componentIds = set([cid for cid in componentIds if cid is not None])
+            
+            if len(componentIds) == 1:
+                feature.componentId = list(componentIds)[0] 
+            else:
+                feature.componentId = Component.make_id(self.nextComponentIdx)
+                self.nextComponentIdx += 1
+            meld_components(feature.componentId, componentIds)          
+            
+        for tile in self.tiles.values():
+            for feature in tile.features:
+                if feature.componentId is None:
+                    assign_component(feature, tile)
+        self.components = Component.calculate_from_tiles(self.tiles.values())        
 
-            for node in self.frontier:
-                if node.isSearched:
-                    continue
+    def update_legal_moves(self) -> None:
+        return update_legal_moves(self)
 
-                node.isSearched = True
-                i, j = node.i, node.j
-                tile = find(i, j)
-                if tile:
-                    node.isFrontier = False
-                    expand(i - 1, j)
-                    expand(i + 1, j)
-                    expand(i, j - 1)
-                    expand(i, j + 1)
+    def update_frontier(self) -> None:
+        return update_frontier(self)

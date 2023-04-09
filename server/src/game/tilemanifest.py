@@ -1,45 +1,9 @@
-from src.modules.jsondata import jsondata, List
+from src.modules.jsondata import jsondata, List, enum_options
 from functools import cache
 from src.game.tile import Tile
 from src.game.feature import Feature, FeatureType, Conn, Coordinate
-from src.game.meeple import Meeple
-from src.game.sides import Side
-
-
-DEFAULT_TILE = {
-    "id": "",
-    "image": "",
-    "transform": {
-        "i": 0,
-        "j": 0,
-        "rot": 0
-    },
-    "sides": {
-        "left": "Road",
-        "right": "Road",
-        "top": "Road",
-        "bottom": "Road"
-    },
-    "features": [
-        {
-            "componentId": None,
-            "svg": "",
-            "type": "Monastary",
-            "clickable": {
-                "x": 0,
-                "y": 0
-            },
-            "placeables": [
-                {
-                    "name": "Meeple",
-                    "image": ""
-                }
-            ]
-        }
-    ],
-    "numShields": 0,
-    "isGarden": False
-}
+from src.game.types import Side
+import src.modules.logger as logger
 
 
 def basicV2(code):
@@ -50,14 +14,12 @@ def monastery() -> Feature:
     feature = Feature()
     feature.type = FeatureType.Monastary
     feature.clickable.x = feature.clickable.y = 50
-    feature.placeables.append(Meeple())
     return feature
 
 
 def field() -> Feature:
     feature = Feature()
     feature.type = FeatureType.Field
-    feature.placeables.append(Meeple())
     return feature
 
 
@@ -67,7 +29,6 @@ def right_city() -> Feature:
     feature.clickable.x = 85
     feature.clickable.y = 50
     feature.connections = [Conn.RB, Conn.RM, Conn.RT]
-    feature.placeables.append(Meeple())
     return feature
 
 
@@ -77,7 +38,6 @@ def top_city() -> Feature:
     feature.clickable.x = 50
     feature.clickable.y = 85
     feature.connections = [Conn.TR, Conn.TM, Conn.TL]
-    feature.placeables.append(Meeple())
     return feature
 
 
@@ -87,7 +47,6 @@ def left_city() -> Feature:
     feature.clickable.x = 15
     feature.clickable.y = 50
     feature.connections = [Conn.LT, Conn.LM, Conn.LB]
-    feature.placeables.append(Meeple())
     return feature
 
 
@@ -97,7 +56,6 @@ def bottom_city() -> Feature:
     feature.clickable.x = 50
     feature.clickable.y = 15
     feature.connections = [Conn.BL, Conn.BM, Conn.BR]
-    feature.placeables.append(Meeple())
     return feature
 
 
@@ -107,7 +65,6 @@ def right_road() -> Feature:
     feature.clickable.x = 75
     feature.clickable.y = 50
     feature.connections = [Conn.RM]
-    feature.placeables.append(Meeple())
     return feature
 
 
@@ -117,7 +74,6 @@ def top_road() -> Feature:
     feature.clickable.x = 50
     feature.clickable.y = 75
     feature.connections = [Conn.TM]
-    feature.placeables.append(Meeple())
     return feature
 
 
@@ -127,7 +83,6 @@ def left_road() -> Feature:
     feature.clickable.x = 25
     feature.clickable.y = 50
     feature.connections = [Conn.LM]
-    feature.placeables.append(Meeple())
     return feature
 
 
@@ -137,7 +92,6 @@ def bottom_road() -> Feature:
     feature.clickable.x = 50
     feature.clickable.y = 25
     feature.connections = [Conn.BM]
-    feature.placeables.append(Meeple())
     return feature
 
 
@@ -367,7 +321,7 @@ def tile_manifest() -> List[Tile]:
     feature = field()
     feature.clickable.x = 50
     feature.clickable.y = 50
-    feature.connections = [Conn.RT, Conn.RM, Conn.RB, Conn.BL, Conn.BM, Conn.BR]
+    feature.connections = [Conn.LT, Conn.LM, Conn.LB, Conn.BL, Conn.BM, Conn.BR]
     TILE_I.features.append(feature)
 
 
@@ -440,13 +394,13 @@ def tile_manifest() -> List[Tile]:
     feature = field()
     feature.clickable.x = 15
     feature.clickable.y = 15
-    feature.connections = [Conn.RB, Conn.BL]
+    feature.connections = [Conn.LB, Conn.BL]
     TILE_L.features.append(feature)
 
     feature = field()
     feature.clickable.x = 85
     feature.clickable.y = 15
-    feature.connections = [Conn.BL, Conn.RB]
+    feature.connections = [Conn.BR, Conn.RB]
     TILE_L.features.append(feature)
 
 
@@ -675,7 +629,7 @@ def tile_manifest() -> List[Tile]:
     TILE_X.features.append(feature)
 
 
-    return [
+    manifest = [
         TILE_A,
         TILE_B,
         TILE_C,
@@ -701,6 +655,22 @@ def tile_manifest() -> List[Tile]:
         TILE_W,
         TILE_X
     ]
+
+    for tile in manifest:
+        # Validate features
+        connections = []
+        for idx, feature in enumerate(tile.features):
+            feature.id = f"feature{idx}"
+            connections.extend(feature.connections)
+        
+        options = enum_options(Conn)
+        if (
+            len(connections) != len(options) or
+            set(connections) != set(options)
+        ):
+            raise Exception(f"Malformed connections for tile: {tile}")
+    
+    return manifest
 
 
 def tile_default_start():

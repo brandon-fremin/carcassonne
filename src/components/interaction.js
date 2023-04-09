@@ -100,7 +100,7 @@ export default function Interaction() {
     move.transform.i === nextTile.transform.i && move.transform.j === nextTile.transform.j && move.transform.rot === nextTile.transform.rot
   )
   const placeTile = () => {
-    fetch("/makeMove", request({
+    fetch("/placeTile", request({
       sessionId: sessionId,
       move: {
         tileId: nextTile.id, 

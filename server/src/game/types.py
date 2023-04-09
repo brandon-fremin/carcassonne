@@ -1,0 +1,76 @@
+from src.modules.jsondata import jsondata, Enum, enum_options, List
+
+
+class Color(Enum):
+    Red: str = "Red"
+    Blue: str = "Blue"
+    Yellow: str = "Yellow"
+    Green: str = "Green"
+
+
+class MeepleType(Enum):
+    Basic: str = "Basic"
+    Abbot: str = "Abbot"
+
+
+class Side(Enum):
+    Road: str = "Road"
+    City: str = "City"
+    Field: str = "Field"
+
+
+class Extension(Enum):
+    Farmers: str = "Farmers"
+    # Abbot: str = "Abbot"
+    # River: str = "River"
+    # InnAndCathedrals: str = "Inn and Cathedrals"
+
+
+class FeatureType(Enum):
+    Monastary: str = "Monastary"
+    Road: str = "Road"
+    City: str = "City"
+    Field: str = "Field"
+    Garden: str = "Garden"
+
+
+@jsondata
+class Meeple:
+    type: MeepleType
+    color: Color
+    image: str
+    
+
+@jsondata
+class Transform:
+    i: int
+    j: int
+    rot: int
+
+
+@jsondata
+class Sides:
+    left: Side
+    right: Side
+    top: Side
+    bottom: Side
+
+
+@jsondata
+class Move:
+    tileId: str
+    transform: Transform
+
+
+@jsondata
+class Avatar:
+    name: str
+    color: Color
+    score: int
+
+    def __init__(self, name: str, color: Color):
+        assert type(name) is str
+        assert type(color) is Color
+        self.name = name
+        self.color = color
+        self.score = 0

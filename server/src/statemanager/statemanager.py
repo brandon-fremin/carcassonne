@@ -1,6 +1,6 @@
 from src.modules.jsondata import jsondata, List, Enum, dumps, asdict
 from src.agent.agent import Agent
-from src.event.event import Event, InitializeGameEvent, MakeMoveEvent
+from src.event.event import Event, InitializeGameEvent, PlaceTileEvent
 from src.game.game import Game
 from src.modules.psuedorandom import PsuedoRandom
 import os
@@ -18,7 +18,8 @@ if not os.path.exists(STATE_DIR):
 
 class GameState(Enum):
     Uninitialized: str = "Uninitialized"
-    Waiting: str = "Waiting"    
+    WaitingPlaceTile: str = "WaitingPlaceTile"
+    WaitingPlaceMeeple: str = "WaitingPlaceMeeple"        
 
 
 @jsondata
@@ -63,13 +64,23 @@ class StateManager:
 
     def __handle_initialize_game_event(self, event: Event):
         assert type(event.payload) is InitializeGameEvent
+        assert self.fsaState == GameState.Uninitialized
         settings = event.payload.settings
         self.game = Game(settings, self.random)
         self.agents = [Agent(i) for i in range(settings.numPlayers)]
+        self.fsaState = GameState.WaitingPlaceTile
 
-    def __handle_make_move_event(self, event: Event):
-        assert type(event.payload) is MakeMoveEvent
-        self.game.board.make_move(event.payload.move, self.random)
+    def __handle_place_tile_event(self, event: Event):
+        assert type(event.payload) is PlaceTileEvent
+        #assert self.fsaState == GameState.WaitingPlaceTile
+        self.game.board.place_tile(event.payload.move, self.random)
+        #self.fsaState = GameState.WaitingPlaceMeeple
+    
+    def __handle_place_meeple_event(self, event: Event):
+        assert type(event.payload) is PlaceTileEvent
+        assert self.fsaState == GameState.WaitingPlaceMeeple
+        self.game.board.place_meeple(event.payload.move, self.random)
+        self.fsaState = GameState.WaitingPlaceTile
 
     def __handle(self, event: Event):
         logger.info(
@@ -77,8 +88,8 @@ class StateManager:
         payload = event.payload
         if type(payload) is InitializeGameEvent:
             self.__handle_initialize_game_event(event)
-        elif type(payload) is MakeMoveEvent:
-            self.__handle_make_move_event(event)
+        elif type(payload) is PlaceTileEvent:
+            self.__handle_place_tile_event(event)
         else:
             raise TypeError(f"Unknown payload: {payload}")
 

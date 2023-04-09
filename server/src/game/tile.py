@@ -1,6 +1,5 @@
 from src.modules.jsondata import jsondata, Optional
-from src.game.sides import Sides
-from src.game.transform import Transform
+from src.game.types import Sides, Transform
 from src.game.feature import Feature
 from typing import List
 
@@ -15,9 +14,6 @@ class Tile:
     numShields: int
     isGarden: bool
 
-    def type(self) -> str:
-        return self.image
-    
     def rotate_90deg_ccw(self):
         self.sides.right, self.sides.top, self.sides.left, self.sides.bottom = \
             self.sides.bottom, self.sides.right, self.sides.top, self.sides.left
@@ -29,4 +25,3 @@ class Tile:
         assert deg % 90 == 0
         for _ in range(deg // 90):
             self.rotate_90deg_ccw()
-

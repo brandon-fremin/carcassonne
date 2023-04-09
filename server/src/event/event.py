@@ -1,7 +1,7 @@
 from datetime import datetime
 from src.modules.jsondata import jsondata, Union
 from src.game.settings import Settings
-from src.game.move import Move
+from src.game.types import Move
 
 
 @jsondata
@@ -10,8 +10,14 @@ class InitializeGameEvent:
 
 
 @jsondata
-class MakeMoveEvent:
+class PlaceTileEvent:
     move: Move
+
+
+@jsondata
+class PlaceMeepleEvent:
+    tileId: str
+    featureId: str
 
 
 @jsondata
@@ -20,5 +26,5 @@ class Event:
     senderId: str
     payload: Union[
                     InitializeGameEvent, 
-                    MakeMoveEvent
+                    PlaceTileEvent
                 ]

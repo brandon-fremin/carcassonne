@@ -1,8 +1,7 @@
 from src.modules.jsondata import jsondata, Enum, enum_options, List
 from src.game.board import Board
-from src.game.avatar import Avatar, Color
+from src.game.types import Avatar, Color, Move
 from src.game.settings import Settings
-from src.game.move import Move
 from src.modules.psuedorandom import PsuedoRandom
 
 
@@ -26,5 +25,5 @@ class Game:
             for i in range(settings.numPlayers)
         ]
 
-    def make_move(self, move: Move, random: PsuedoRandom):
-        self.board.make_move(move, random)
+    def place_tile(self, move: Move, random: PsuedoRandom):
+        self.board.place_tile(move, random)

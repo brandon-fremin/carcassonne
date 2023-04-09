@@ -2,9 +2,9 @@ from flask import Flask, request as FlaskRequest
 import random, traceback
 import src.modules.logger as logger
 from src.statemanager.statemanager import StateManager
-from src.event.event import Event, InitializeGameEvent, MakeMoveEvent
+from src.event.event import Event, InitializeGameEvent, PlaceTileEvent
 from src.game.settings import Settings
-from src.game.move import Move
+from src.game.types import Move
 from src.modules.jsondata import jsondata, asdict, Dict
 from src.modules.timer import timer_cb
 from time import sleep
@@ -66,7 +66,7 @@ class NewGameResponse:
     sessionId: str
 
 @jsondata
-class MakeMoveRequest:
+class PlaceTileRequest:
     sessionId: str
     move: Move
 
@@ -106,12 +106,12 @@ class Server:
         response = asdict(NewGameResponse(sessionId=state.sessionId))
         return response
 
-    @FLASK_APP.route('/makeMove', methods=["GET", "PUT"])
+    @FLASK_APP.route('/placeTile', methods=["GET", "PUT"])
     @middleware
-    def makeMove():
-        request = MakeMoveRequest(FlaskRequest.json)
+    def placeTile():
+        request = PlaceTileRequest(FlaskRequest.json)
         event = make_flask_event()
-        event.payload = MakeMoveEvent(move=request.move)
+        event.payload = PlaceTileEvent(move=request.move)
         state = get_state_manager(request.sessionId).handle(event).save()
         response = asdict(state.game)
         return response
