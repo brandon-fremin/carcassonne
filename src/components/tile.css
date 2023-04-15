@@ -12,16 +12,13 @@
   position: absolute;
   transition: 0.3s;
   box-shadow: 0px 0px 6px 3px var(--edge) inset;
-}
-
-.adjacent {
-  --edge: grey;
-  --hover-fill: lightgrey;
+  background-color: var(--overlay);
+  opacity: var(--opacity);
   transition: 0.3s;
-  box-shadow: 0px 0px 6px 3px var(--edge) inset;
 }
 
-.adjacent:hover {
+.tile-overlay:hover {
   background-color: var(--hover-fill);
   transition: 0.3s;
 }
+

@@ -12,6 +12,7 @@ export const TILE_CLASS = {
 }
 
 export const TILE_EDGE = {
+  NONE: undefined,
   LEGAL: {
     "--edge": "green"
   },
@@ -26,7 +27,27 @@ export const TILE_EDGE = {
   }
 }
 
-function getTileContent(className, image, edge, rotation) {
+export const TILE_SHADE = {
+  NONE: undefined,
+  BLUE: {
+    "--overlay": "blue",
+    "--opacity": 0.35
+  },
+  ORANGE: {
+    "--overlay": "orange",
+    "--opacity": 0.35
+  },
+  GREEN: {
+    "--overlay": "green",
+    "--opacity": 0.35
+  },
+  PURPLE: {
+    "--overlay": "purple",
+    "--opacity": 0.35
+  }
+}
+
+function getTileContent(className, image) {
   return (
     <div
       className={className}
@@ -34,17 +55,18 @@ function getTileContent(className, image, edge, rotation) {
         height: TILE_SIDE, 
         width: TILE_SIDE,
         backgroundImage: `url(${image})`,
-        backgroundSize: "cover",
-        ...edge
+        backgroundSize: "cover"
       }}
     />
   )
 }
 
-function getTileOverlay(className, overlayEdge) {
-  const side = ![TILE_CLASS.PREVIEW, TILE_CLASS.FULL].includes(className) ?
-    "0px" : TILE_SIDE
-  const topLeft = `${side === TILE_SIDE ? 0 : TILE_SIDE_INT / 2}px`
+function getTileOverlay(className, edge, shade) {
+  // const side = ![TILE_CLASS.PREVIEW, TILE_CLASS.FULL].includes(className) ?
+  //   "0px" : TILE_SIDE
+  // const topLeft = `${side === TILE_SIDE ? 0 : TILE_SIDE_INT / 2}px`
+  const side = TILE_SIDE
+  const topLeft = 0  //TILE_SIDE_INT / 2
 
   // return (
   //   <div className="tile-overlay">
@@ -88,6 +110,10 @@ function getTileOverlay(className, overlayEdge) {
   //   </div>
   // )
 
+  const hoverFill = className === TILE_CLASS.ADJACENT ?
+    { "--hover-fill": "lightgrey" } : shade !== TILE_SHADE.NONE ?
+    { "--hover-fill": shade["--overlay"] } : undefined
+
   return (
     <div
       className="tile-overlay"
@@ -96,15 +122,17 @@ function getTileOverlay(className, overlayEdge) {
         width: side,
         top: topLeft,
         left: topLeft,
-        ...overlayEdge
+        ...edge,
+        ...hoverFill,
+        ...shade
       }}
     />
   )
 }
 
-export default function Tile({className, image, handleClick, rotation, tip, edge, overlayEdge}) {
-  const tile = getTileContent(className, image, edge, rotation)
-  const overlay = getTileOverlay(className, overlayEdge)
+export default function Tile({className, image, handleClick, rotation, tip, edge, shade}) {
+  const tile = getTileContent(className, image)
+  const overlay = getTileOverlay(className, edge, shade)
   return (
     <Tooltip title={tip} placement={"top"}>
       <div 

@@ -30,6 +30,7 @@ def get_state_manager(session_id: str = None) -> StateManager:
 def middleware(func):
     @timer_cb(logger.info)
     def middleware_wrapper(*args, **kwargs):
+        print("adfadfadfadsf", flush=True)
         try:
             request = FlaskRequest.json
             logger.info(f"{func.__name__} - Request: {request}")

@@ -1,6 +1,6 @@
 import { useSelector, useDispatch } from 'react-redux'
 import { ACTIONS } from '../state/reducer'
-import Tile, { TILE_CLASS, TILE_EDGE, TILE_SIDE_INT } from './tile'
+import Tile, { TILE_CLASS, TILE_EDGE, TILE_SHADE, TILE_SIDE_INT } from './tile'
 import "./board.css"
 import IMAGE_MAP from '../assets/tiles/tileimages'
 
@@ -36,6 +36,19 @@ class BoardData {
 
   getSelectedComponent() {
     return this.board.components[this.selectedComponentId]
+  }
+
+  isLegal(i, j, rot) {
+    const legalMoves = this.getLegalMoves()
+    return legalMoves.some((move) =>
+      move.transform.i === i && 
+      move.transform.j === j && 
+      move.transform.rot === rot)
+  }
+
+  isLegalNextTile() {
+    const transform = this.getNextTile().transform
+    return this.isLegal(transform.i, transform.j, transform.rot)
   }
 
   static tileAt(tile, i, j) {
@@ -105,42 +118,52 @@ class BoardData {
     const className = this.tileClassName(i, j)
     const legalMoves = this.getLegalMoves()
     const nextTile = this.getNextTile()
-    if (!className || !nextTile || 
-      className === TILE_CLASS.FULL || className == TILE_CLASS.EMPTY
-    ) {
+    if (className === undefined) {
+      console.error("Error!!!", this.board)
+      return TILE_EDGE.NONE
+    }
+
+    if (className === TILE_CLASS.PREVIEW) {
+      return this.isLegalNextTile() ? TILE_EDGE.LEGAL : TILE_EDGE.ILLEGAL
+    }
+
+    if (className === TILE_CLASS.ADJACENT) {
+      // check if we have an exact match
+      if (this.isLegal(i, j, nextTile.transform.rot)) {
+        return TILE_EDGE.LEGAL
+      }
+      // check if we are off by rotation
+      if (legalMoves.some((move) =>
+        move.transform.i === i && move.transform.j === j
+      )) {
+        return TILE_EDGE.ROTATE
+      }
       return TILE_EDGE.DEFAULT
     }
-    const rot = nextTile.transform.rot
-    // check if we have an exact match
-    if (legalMoves.some((move) =>
-      move.transform.i === i && move.transform.j === j && move.transform.rot === rot
-    )) {
-      return TILE_EDGE.LEGAL
-    }
-    // check if we are off by rotation
-    if (legalMoves.some((move) =>
-      move.transform.i === i && move.transform.j === j
-    )) {
-      return TILE_EDGE.ROTATE
-    }
-    return TILE_EDGE.DEFAULT
+    
+    // EMPTY and FULL
+    return TILE_EDGE.NONE
   }
 
-  tileOverlayEdge(i, j) {
-    const className = this.tileClassName(i, j)
-    if (className === TILE_CLASS.FULL) {
-      const selectedComponent = this.getSelectedComponent()
-      if (selectedComponent.includedTileIds.includes(this.tileId(i, j))) {
-        console.log(this.tileId(i, j))
-      } else {
-        return undefined
+  tileShade(i, j) {
+    const comp = this.getSelectedComponent()
+    if (
+      this.tileClassName(i, j) === TILE_CLASS.FULL &&
+      comp !== undefined &&
+      comp.includedTileIds.includes(this.tileId(i, j))
+    ) {
+      if (comp.type === "Field") {
+        return TILE_SHADE.GREEN
+      } else if (comp.type === "Road") {
+        return TILE_SHADE.BLUE
+      } else if (comp.type === "City") {
+        return TILE_SHADE.ORANGE
+      } else if (comp.type === "Monastary") {
+        return TILE_SHADE.PURPLE
       }
     }
-    if ([TILE_CLASS.EMPTY, TILE_CLASS.ADJACENT].includes(className)) {
-      return undefined
-    }
-    const edge = this.tileEdge(i, j)
-    return [TILE_EDGE.ILLEGAL, TILE_EDGE.ROTATE, TILE_EDGE.DEFAULT].includes(edge) ? TILE_EDGE.ILLEGAL : undefined
+
+    return TILE_SHADE.NONE
   }
 
   tileId(i, j) {
@@ -208,9 +231,9 @@ class BoardData {
         image={this.tileImage(i, j)}
         tip={this.tileTip(i, j)}
         edge={this.tileEdge(i, j)}
-        overlayEdge={this.tileOverlayEdge(i, j)}
         handleClick={this.tileHandleClick(i, j)}
         rotation={this.tileRotation(i, j)}
+        shade={this.tileShade(i, j)}
       />
     )
   }
