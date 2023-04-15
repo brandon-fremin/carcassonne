@@ -14,12 +14,15 @@ class Settings:
 
     def __init__(self, *args, **kwargs):
         assert len(args) == len(kwargs) == 0
-        self.extensions = enum_options(Extension)
-        self.startTile = tile_default_start()
-        self.numPlayers = 0
-        self.manifest = tile_manifest()
-        self.counts = TILE_DEFAULT_COUNTS
-    
+        try:
+            self.extensions = enum_options(Extension)
+            self.startTile = tile_default_start()
+            self.numPlayers = 0
+            self.manifest = tile_manifest()
+            self.counts = TILE_DEFAULT_COUNTS
+        except:
+            raise Exception()
+
 
 
 

@@ -25,3 +25,9 @@ class Tile:
         assert deg % 90 == 0
         for _ in range(deg // 90):
             self.rotate_90deg_ccw()
+
+    def set_transform(self, transform: Transform):
+        assert type(transform) is Transform
+        self.rotate_ccw(transform.rot)
+        self.transform = transform
+        

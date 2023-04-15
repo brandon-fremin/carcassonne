@@ -48,15 +48,23 @@ class StateManager:
         self.agents = []
         self.history = []
 
+    @timer_cb(logger.info)
     def initialize_by_session_id(self, session_id: str):
-        with open(self.session_file(session_id), "rb") as session_fp:
-            self.__init__(json.load(session_fp))
+        filename = self.session_file(session_id)
+        try:
+            with open(filename, "rb") as session_fp:
+                self.__init__(json.load(session_fp))
+        except json.decoder.JSONDecodeError:
+            raise Exception(f"File '{filename}' is corrupted!")
 
     @staticmethod
     def session_file(session_id: str) -> str:
         return os.path.join(STATE_DIR, f'session.{session_id}.json')
 
+    @timer_cb(logger.info)
     def save(self):
+        if not os.path.exists(STATE_DIR):
+            os.mkdir(STATE_DIR)
         with open(StateManager.session_file(self.sessionId), "w") as session_fp:
             data = dumps(self, indent=2)
             session_fp.write(data)

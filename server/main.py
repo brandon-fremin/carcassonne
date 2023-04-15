@@ -9,6 +9,7 @@ from src.modules.jsondata import dumps
 from src.game.game import Game
 from src.game.settings import Settings
 from src.modules.psuedorandom import PsuedoRandom
+from src.game.frontier import Frontier
 
 @timer_cb(logger.info)
 def main():
@@ -26,6 +27,9 @@ def main():
     server.run()
 
     # g = Game(Settings(), PsuedoRandom())
+    # f = Frontier()
+    # t = Tile()
+    # f.push(t)
     
 
 

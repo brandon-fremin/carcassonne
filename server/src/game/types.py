@@ -61,6 +61,14 @@ class Move:
     tileId: str
     transform: Transform
 
+    def __init__(self, tileId: str, i: int = 0, j: int = 0, rot: int = 0):
+        assert type(tileId) is str
+        assert type(i) is int
+        assert type(j) is int
+        assert type(rot) is int
+        self.tileId = tileId
+        self.transform = Transform(i=i, j=j, rot=rot)
+
 
 @jsondata
 class Avatar:

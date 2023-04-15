@@ -3,6 +3,7 @@ import './App.css';
 import Board from './components/board';
 import Interaction from './components/interaction';
 import { APP_BAR_HEIGHT } from './components/theme/themedappbar';
+import Components from './components/components';
 
 const PADDING = "10px"
 const LEFT_COL = "250px"
@@ -20,7 +21,9 @@ function App() {
             <Interaction/>
           </div>
           <div style={{height: PADDING}}></div>
-          <div style={{flex: 1, backgroundColor: "pink"}}>Messages</div>
+          <div style={{flex: 1, backgroundColor: "pink"}}>
+            <Components/>
+          </div>
         </div>
         <div style={{width: PADDING}}></div>
         <div style={{flex: 1, width: CENTER_WIDTH, height: CENTER_HEIGHT, display: "flex", backgroundColor: "pink", overflow: "auto"}}>

@@ -88,7 +88,7 @@ def left_road() -> Feature:
 
 def bottom_road() -> Feature:
     feature = Feature()
-    feature.type = FeatureType.City
+    feature.type = FeatureType.Road
     feature.clickable.x = 50
     feature.clickable.y = 25
     feature.connections = [Conn.BM]
@@ -97,6 +97,8 @@ def bottom_road() -> Feature:
 
 def group_features(*args) -> Feature:
     features: List[Feature] = args
+    for feature in features:
+        assert feature.type == features[0].type
     res = Feature(features[0])
     res.clickable.x = sum([f.clickable.x for f in features]) // len(features)
     res.clickable.y = sum([f.clickable.y for f in features]) // len(features)
@@ -660,7 +662,8 @@ def tile_manifest() -> List[Tile]:
         # Validate features
         connections = []
         for idx, feature in enumerate(tile.features):
-            feature.id = f"feature{idx}"
+            sides = "_".join([c.name for c in feature.connections])
+            feature.id = f"feature{idx}_{feature.type.name}_{sides}"
             connections.extend(feature.connections)
         
         options = enum_options(Conn)

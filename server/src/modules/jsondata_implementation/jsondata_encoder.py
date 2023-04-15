@@ -2,17 +2,8 @@ import json
 from typing import List, Dict, Union, Optional, get_origin, get_args
 from enum import Enum
 from datetime import datetime
+from src.modules.decorators import except_with_default
 
-
-def except_with_default(default):
-    def decorator(func):
-        def wrapper(*args, **kwargs):
-            try:
-                return func(*args, **kwargs)
-            except:
-                return default
-        return wrapper
-    return decorator
 
 
 class JSONDataEncoder(json.JSONEncoder):

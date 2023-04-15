@@ -3,7 +3,8 @@ export const ACTIONS = {
   ROTATE_NEXT_TILE: "ROTATE_NEXT_TILE",
   DEFAULT_GAME_SETTINGS: "DEFAULT_GAME_SETTINGS",
   SET_SESSION_ID: "SET_SESSION_ID",
-  SET_GAME: "SET_GAME"
+  SET_GAME: "SET_GAME",
+  SELECT_COMPONENT: "SELECT_COMPONENT"
 };
 
 const handleDefaultGameSettings = (state, payload) => {
@@ -46,6 +47,13 @@ const handlePreviewPlacement = (state, payload) => {
   return newState
 }
 
+const handleSetComponent = (state, payload) => {
+  const { componentId } = payload
+  let newState = { ...state }
+  newState.selectedComponentId = componentId
+  return newState
+}
+
 const handler = (state, action) => {
   switch (action.type) {
     case ACTIONS.PREVIEW_PLACEMENT:
@@ -58,6 +66,8 @@ const handler = (state, action) => {
       return handleSetSessionId(state, action.payload)
     case ACTIONS.SET_GAME:
       return handleSetGame(state, action.payload)
+    case ACTIONS.SELECT_COMPONENT:
+      return handleSetComponent(state, action.payload)
     default: {
       console.log(`Unknown action: '${action.type}'`)
       return state

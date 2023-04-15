@@ -29,7 +29,7 @@ def get_state_manager(session_id: str = None) -> StateManager:
 
 def middleware(func):
     @timer_cb(logger.info)
-    def wrapper(*args, **kwargs):
+    def middleware_wrapper(*args, **kwargs):
         try:
             request = FlaskRequest.json
             logger.info(f"{func.__name__} - Request: {request}")
@@ -42,8 +42,8 @@ def middleware(func):
         logger.debug(f"Response: {response}")
         logger.flush()
         return response
-    wrapper.__name__ = func.__name__
-    return wrapper
+    middleware_wrapper.__name__ = func.__name__
+    return middleware_wrapper
 
 
 def make_flask_event() -> Event:
@@ -102,7 +102,8 @@ class Server:
         request = NewGameRequest(FlaskRequest.json)
         event = make_flask_event()
         event.payload = InitializeGameEvent(settings=request.settings)
-        state = get_state_manager().handle(event).save()
+        state = get_state_manager().handle(event)
+        # state.save()
         response = asdict(NewGameResponse(sessionId=state.sessionId))
         return response
 
@@ -112,7 +113,8 @@ class Server:
         request = PlaceTileRequest(FlaskRequest.json)
         event = make_flask_event()
         event.payload = PlaceTileEvent(move=request.move)
-        state = get_state_manager(request.sessionId).handle(event).save()
+        state = get_state_manager(request.sessionId).handle(event)
+        # state.save()
         response = asdict(state.game)
         return response
 

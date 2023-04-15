@@ -20,6 +20,18 @@ class Conn(Enum):
     @staticmethod
     def rotate_90deg_ccw(conn):
         return Conn((conn.value + 3) % 12)
+    
+    def is_right(self) -> bool:
+        return self.value in [Conn.RB, Conn.RM, Conn.RT]
+    
+    def is_top(self) -> bool:
+        return self.value in [Conn.TR, Conn.TM, Conn.TL]
+    
+    def is_left(self) -> bool:
+        return self.value in [Conn.LT, Conn.LM, Conn.LB]
+    
+    def is_bottom(self) -> bool:
+        return self.value in [Conn.BL, Conn.BM, Conn.BR]
 
 
 @jsondata

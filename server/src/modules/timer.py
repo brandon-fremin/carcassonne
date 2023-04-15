@@ -31,7 +31,8 @@ class TimerClock:
     def __str__(self):
         if self.elapsed_ms < 0:
             raise Exception("Cannot call str(TimerClock) before calling stop!")
-        return f"Function '{self.func.__name__}' took {self.elapsed_ms:0.3f} ms"
+        funcname = f"{self.func.__module__}::{self.func.__name__}"
+        return f"Function '{funcname}' took {self.elapsed_ms:0.3f} ms"
 
 
 def timer_wrapper_factory(func, callback):
