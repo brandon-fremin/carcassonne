@@ -1,0 +1,24 @@
+{
+  "set": "basic",
+  "version": 2,
+  "image": "basic_v2_CCCC_S_XC1234_N1W",
+  "sides": {
+    "right": "C",
+    "top": "C",
+    "left": "C",
+    "bottom": "C"
+  },
+  "components": [
+    {
+      "id": "C1234",
+      "svg": "M 0 0 L 100 0 L 100 100 L 0 100 Z",
+      "x": 50,
+      "y": 50,
+      "avatars": [ "meeple", "abbot" ]
+    }
+  ],
+  "isStart": false,
+  "numShields": 1,
+  "isGarden": false,
+  "isUnplayable": false
+}
