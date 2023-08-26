@@ -1,0 +1,45 @@
+syntax = "proto3";
+package carcassonne;
+
+enum SenderType {
+    ANONYMOUS = 0;
+    PLAYER = 1;
+    SERVER = 2;
+    DEVELOPER = 3;
+}
+
+message Sender {
+    SenderType type = 1;
+    string id = 2;
+}
+
+message EchoRequest {
+    string data = 1;
+}
+
+message EchoResponse {
+    string data = 1;
+}
+
+message StartGameRequest {
+    int32 numPlayers = 1;
+    repeated string playerNames = 2;
+}
+
+message StartGameResponse {
+    string gameId = 1;
+}
+
+message Payload {
+    oneof payload {
+        EchoRequest echoRequest = 1;
+        EchoResponse echoResponse = 2;
+        StartGameRequest startGameRequest = 3;
+        StartGameResponse startGameResponse = 4;
+    }
+}
+
+message Message {
+    Sender sender = 1;
+    Payload payload = 2;
+}
