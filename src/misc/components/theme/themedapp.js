@@ -21,7 +21,7 @@ const style = {
   width: "100vw",
   display: "flex",
   flexDirection: "column",
-  backgroundColor: "green"
+  backgroundColor: "whitesmoke"
 }
 
 export default function ThemedApp({children}) {

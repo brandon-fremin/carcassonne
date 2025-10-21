@@ -68,47 +68,47 @@ function getTileOverlay(className, edge, shade) {
   const side = TILE_SIDE
   const topLeft = 0  //TILE_SIDE_INT / 2
 
-  // return (
-  //   <div className="tile-overlay">
-  //     <svg width="100" height="100">
-  //       {/* <circle 
-  //         cx="50" cy="50" r="10" 
-  //         stroke="red" 
-  //         strokeWidth="2" 
-  //         fill="red" 
-  //         fillOpacity="0.6" 
-  //         onClick={() => console.log("asdfasdf")}
-  //         cursor="pointer"/>
-  //       <polygon
-  //         points="0,0 100,0 75,50 100,100 0,100 25,50"
-  //         stroke="blue" 
-  //         strokeWidth="2" 
-  //         fill="blue" 
-  //         fillOpacity="0.2" 
-  //       /> */}
-  //       <path
-  //         // M 0 0              --> move to 0,0
-  //         // L 100 0            --> line to 100,0
-  //         // A 50 25 0 0 1 0 0  --> arch <rx> <ry> 0 0 <clockwise> <x> <y>
-  //         d="M 0 0 L 100 0 A 50 25 0 0 1 0 0 Z"
-  //         stroke="blue" 
-  //         strokeWidth="2" 
-  //         fill="blue" 
-  //         fillOpacity="0.2" 
-  //       />
-  //       <path
-  //         // M 0 0              --> move to 0,100
-  //         // L 100 0            --> line to 100,100
-  //         // A 50 25 0 0 1 0 0  --> arch <rx> <ry> 0 0 <clockwise> <x> <y>
-  //         d="M 0 100 L 100 100 A 50 25 0 0 0 0 100 Z"
-  //         stroke="blue" 
-  //         strokeWidth="2" 
-  //         fill="blue" 
-  //         fillOpacity="0.2" 
-  //       />
-  //     </svg>
-  //   </div>
-  // )
+  return (
+    <div className="tile-overlay">
+      <svg width="100" height="100">
+        <circle 
+          cx="50" cy="50" r="10" 
+          stroke="red" 
+          strokeWidth="2" 
+          fill="red" 
+          fillOpacity="0.6" 
+          onClick={() => console.log("asdfasdf")}
+          cursor="pointer"/>
+        <polygon
+          points="0,0 100,0 75,50 100,100 0,100 25,50"
+          stroke="blue" 
+          strokeWidth="2" 
+          fill="blue" 
+          fillOpacity="0.2" 
+        />
+        <path
+          // M 0 0              --> move to 0,0
+          // L 100 0            --> line to 100,0
+          // A 50 25 0 0 1 0 0  --> arch <rx> <ry> 0 0 <clockwise> <x> <y>
+          d="M 0 0 L 100 0 A 50 25 0 0 1 0 0 Z"
+          stroke="blue" 
+          strokeWidth="2" 
+          fill="blue" 
+          fillOpacity="0.2" 
+        />
+        <path
+          // M 0 0              --> move to 0,100
+          // L 100 0            --> line to 100,100
+          // A 50 25 0 0 1 0 0  --> arch <rx> <ry> 0 0 <clockwise> <x> <y>
+          d="M 0 100 L 100 100 A 50 25 0 0 0 0 100 Z"
+          stroke="blue" 
+          strokeWidth="2" 
+          fill="blue" 
+          fillOpacity="0.2" 
+        />
+      </svg>
+    </div>
+  )
 
   const hoverFill = className === TILE_CLASS.ADJACENT ?
     { "--hover-fill": "lightgrey" } : shade !== TILE_SHADE.NONE ?

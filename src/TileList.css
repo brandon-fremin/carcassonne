@@ -1,0 +1,19 @@
+.tile {
+    --tile-side: 100px;
+    --rotation: 0deg;
+    height: var(--tile-side);
+    width: var(--tile-side);
+    transform: rotate(var(--rotation));
+    background-color: pink;
+    transition: 0.3s;
+}
+
+.tile-list {
+    background-color: blueviolet;
+    width: 100vw;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px;
+}

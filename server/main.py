@@ -1,42 +1,69 @@
-import traceback
-import src.modules.logger as logger
-from src.modules.timer import timer_cb
-from src.server.server import Server
+from flask_socketio import SocketIO, emit
+from flask import Flask
+import os
 
-from src.game.tile import Tile
-from src.game.tilemanifest import tile_manifest
-from src.modules.jsondata import dumps
-from src.game.game import Game
-from src.game.settings import Settings
-from src.modules.psuedorandom import PsuedoRandom
-from src.game.frontier import Frontier
+APP = Flask(__name__)
 
-@timer_cb(logger.info)
-def main():
-    logger.initialize([
-        logger.ColorizedLogWriter(), 
-        logger.FileLogWriter("output.txt", "w"), 
-        logger.FileLogWriter("output.debug.txt", "w", logger.DEBUG)
-    ])
-    
-    # t = tile_manifest()[0]
-    # print(dumps(t, indent=2))
-    # t.rotate_90deg_ccw()
-    # print(dumps(t, indent=2))
-    server = Server()
-    server.run()
+# configure cors_allowed_origins
+if os.environ.get('FLASK_ENV') == 'production':
+    origins = [
+        'http://actual-app-url.herokuapp.com',
+        'https://actual-app-url.herokuapp.com'
+    ]
+else:
+    origins = "*"
 
-    # g = Game(Settings(), PsuedoRandom())
-    # f = Frontier()
-    # t = Tile()
-    # f.push(t)
-    
+# initialize your socket instance
+socketio = SocketIO(cors_allowed_origins=origins)
+
+# handle chat messages
+@socketio.on("chat")
+def handle_chat(data):
+    emit("chat", data, broadcast=True)
+
+# initialize the app with the socket instance
+# you could include this line right after Migrate(app, db)
+socketio.init_app(APP)
+
+# at the bottom of the file, use this to run the app
+if __name__ == '__main__':
+    socketio.run(APP)
 
 
-if __name__ == "__main__":
-    try:
-        main()
-    except Exception as e:
-        tb = traceback.format_exc().strip()
-        logger.warn(tb)
-        logger.fatal(e)
+# import eventlet
+# import socketio
+
+# sio = socketio.Server(cors_allowed_origins=['*'])
+# app = socketio.WSGIApp(sio, static_files={
+#     '/': {'content_type': 'text/html', 'filename': 'index.html'}
+# })
+
+# @sio.event
+# def connect(sid, environ):
+#     print('connect ', sid)
+
+# @sio.event
+# def my_message(sid, data):
+#     print('message ', data)
+
+# @sio.event
+# def disconnect(sid):
+#     print('disconnect ', sid)
+
+# if __name__ == '__main__':
+#     eventlet.wsgi.server(eventlet.listen(('', 5000)), app)
+
+# import asyncio
+# from websockets.server import serve, WebSocketServerProtocol
+
+# async def echo(websocket: WebSocketServerProtocol):
+#     async for message in websocket:
+#         print(message, flush=True)
+#         await websocket.send(message)
+
+# async def main():
+#     print("Serving...", flush=True)
+#     async with serve(echo, "localhost", 5000, origins=["*"]):
+#         await asyncio.Future()  # run forever
+
+# asyncio.run(main())

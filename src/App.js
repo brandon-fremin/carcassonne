@@ -1,39 +1,66 @@
-import ThemedApp from './components/theme/themedapp';
 import './App.css';
-import Board from './components/board';
-import Interaction from './components/interaction';
-import { APP_BAR_HEIGHT } from './components/theme/themedappbar';
-import Components from './components/components';
+import React, { useEffect } from 'react'
+import TileList from './TileList';
+// import { SocketProvider, useSocket } from './utility/SocketProvider';
+import io from 'socket.io-client'
 
-const PADDING = "10px"
-const LEFT_COL = "250px"
-const RIGHT_COL = "250px"
-const CENTER_WIDTH = `calc(100vw - ${PADDING} - ${PADDING} - ${RIGHT_COL} - ${LEFT_COL})`
-const CENTER_HEIGHT = `calc(100vh - ${PADDING} - ${PADDING} - ${APP_BAR_HEIGHT})`
-const INTERACTION_HEIGHT = "250px"
+const socket = io.connect("ws://localhost:5000")
+
+socket.on('connection', (s) => {
+  console.log(`⚡: ${s.id} user just connected!`);
+
+  //Listens and logs the message to the console
+  s.on('message', (data) => {
+    console.log(data);
+  });
+
+  s.on('disconnect', () => {
+    console.log('🔥: A user disconnected');
+  });
+})
+
+// const socket = io("http://localhost:5000")
+
+// socket.onAny((eventName, args) => {
+//   console.log(`${eventName}: ${JSON.stringify(args)}`);
+// });
+
+function Test() {
+  // const socket = useSocket();
+
+  const callback = () => {
+    console.log("Hello World")
+  }
+
+  // useEffect(() => {
+  //   if (socket == null) return
+  //   socket.on('message', callback)
+  //   return () => socket.off('message')
+  // }, [socket])
+
+  const handleClick = () => {
+    console.log("handleClick")
+    // console.log(socket)
+    // socket.emit('handleClick', { "hello": "world" })
+  }
+
+  return (
+    // <SocketProvider>
+    <button onClick={handleClick}>
+      Click Me
+    </button>
+    // </SocketProvider>
+  )
+}
 
 function App() {
   return (
-    <ThemedApp>
-      <div style={{flex: 1, display: "flex", flexDirection: "row", backgroundColor: "yellow", padding: PADDING}}>
-        <div style={{minWidth: LEFT_COL, display: "flex", flexDirection: "column"}}>
-          <div style={{height: INTERACTION_HEIGHT, backgroundColor: "pink"}}>
-            <Interaction/>
-          </div>
-          <div style={{height: PADDING}}></div>
-          <div style={{flex: 1, backgroundColor: "pink"}}>
-            <Components/>
-          </div>
-        </div>
-        <div style={{width: PADDING}}></div>
-        <div style={{flex: 1, width: CENTER_WIDTH, height: CENTER_HEIGHT, display: "flex", backgroundColor: "pink", overflow: "auto"}}>
-          <Board/>
-        </div>
-        <div style={{width: PADDING}}></div>
-        <div style={{minWidth: RIGHT_COL, backgroundColor: "pink"}}>Scores</div>
-      </div>
-    </ThemedApp>
+    <div>
+      <Test />
+      <TileList />
+    </div>
   );
 }
 
 export default App;
+

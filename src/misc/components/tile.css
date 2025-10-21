@@ -1,4 +1,4 @@
-.tile-container {
+/* .tile-container {
   position: relative;
 }
 
@@ -20,5 +20,5 @@
 .tile-overlay:hover {
   background-color: var(--hover-fill);
   transition: 0.3s;
-}
+} */
 
