@@ -22,8 +22,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-
 # pycache artifacts
+.venv
 **/__pycache__
 
 # session artifacts
@@ -32,3 +32,10 @@ yarn-error.log*
 # slogfiles
 **/output.txt
 **/output.debug.txt
+
+# security
+.env
+
+# Local data
+data
+misc
