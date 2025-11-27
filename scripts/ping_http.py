@@ -19,5 +19,9 @@ headers = {
     "CF-Access-Client-Secret": CF_ACCESS_CLIENT_SECRET
 }
 data = {"foo": "bar"}
-response = requests.get("https://iot.brandonfremin.com/ping", headers=headers, json=data)
-print(response.text)
+response = requests.get("https://react.brandonfremin.com/api/lionel", headers=headers, json=data)
+try:
+    print(response)
+    print(response.json())
+except:
+    print(response.text)

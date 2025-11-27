@@ -92,6 +92,16 @@ code C:\Users\bfrem\.cloudflared\config.yml
 
 cloudflared tunnel --url http://localhost:8000
 
+cloudflared tunnel run iot
+```
+
+```
+nvm install --lts
+npm run dev
+```
+
+```
+python3.11 main.py
 ```
 
 ### Environemnt Setup

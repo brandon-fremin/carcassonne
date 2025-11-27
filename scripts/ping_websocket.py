@@ -32,7 +32,7 @@ async def connect(uri: str, headers: dict):
 # uri = "ws://planned-calendars-eyes-andrews.trycloudflare.com/ping"  # Adjust if hosted elsewhere
 # asyncio.run(connect(uri, {}))
 
-uri = f"wss://iot.brandonfremin.com/ping"  # Adjust if hosted elsewhere
+uri = f"wss://react.brandonfremin.com/api/ping"  # Adjust if hosted elsewhere
 headers = {
     "CF-Access-Client-Id": CF_ACCESS_CLIENT_ID,
     "CF-Access-Client-Secret": CF_ACCESS_CLIENT_SECRET

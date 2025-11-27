@@ -16,6 +16,6 @@ MACHINE_NAME: str = os.getenv("COMPUTERNAME", os.getenv("HOSTNAME", "unknown"))
 USERNAME: str = os.getenv("USERNAME", os.getenv("USER", "anonymous"))
 TZ: str = os.getenv("TZ", "America/New_York")
 
-DISABLED_LOGGERS: list[str] = ["urllib3", "requests", "asyncio"]
+DISABLED_LOGGERS: list[str] = ["urllib3", "requests", "asyncio", "cassandra"]
 LOGGER_FORMAT: str = "%(asctime)s.%(msecs)03d %(name)s:%(lineno)d [%(levelname)s] %(message)s"
 LOGGER_DATEFMT: str = "%Y-%m-%dT%H:%M:%S"
