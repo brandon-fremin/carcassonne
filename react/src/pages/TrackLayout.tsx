@@ -58,6 +58,11 @@ interface LayoutData {
     y: number;
     rotation: number;
     fixed?: boolean;
+    links?: Array<{
+      anchorId: string;
+      targetInstanceId: string;
+      targetAnchorId: string;
+    }>;
   }>;
 }
 
@@ -149,7 +154,9 @@ export default function TrackLayout() {
   const [placedTracks, setPlacedTracks] = useState<PlacedTrack[]>([]);
   const [selectedTrackIndex, setSelectedTrackIndex] = useState<number | null>(null);
   const [isDraggingPlaced, setIsDraggingPlaced] = useState<boolean>(false);
+  const [isUnlinkDragging, setIsUnlinkDragging] = useState<boolean>(false);
   const [dragOffset, setDragOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [dragStartPositions, setDragStartPositions] = useState<Map<number, { x: number; y: number }>>(new Map());
   const [hoveredTrackIndex, setHoveredTrackIndex] = useState<number | null>(null);
   const [mousePosition, setMousePosition] = useState<{ x: number; y: number } | null>(null);
   const rotationTimerRef = useRef<number | null>(null);
@@ -194,7 +201,8 @@ export default function TrackLayout() {
         trackId: track.trackId,
         position: { x: track.x, y: track.y },
         rotation: track.rotation,
-        fixed: track.fixed || false
+        fixed: track.fixed || false,
+        links: track.links || []
       })) || [];
       setPlacedTracks(tracks);
     } else {
@@ -437,90 +445,14 @@ export default function TrackLayout() {
         return;
       }
 
-      // Calculate position and rotation to align the anchor with firstAnchor (180 degrees opposite)
-      // Start with the anchor's local position and direction
-      const localX = availableAnchor.position.x;
-      const localY = availableAnchor.position.y;
-      const dirX = availableAnchor.direction.x;
-      const dirY = availableAnchor.direction.y;
-      const localAngle = Math.atan2(dirY, dirX) * 180 / Math.PI;
-
-      // Calculate rotation needed to align with firstAnchor (180 degrees opposite)
-      const targetAngle = firstAnchor.angle + 180;
-      let angleDiff = targetAngle - localAngle;
-      
-      // Normalize angle difference to -180 to 180 range
-      if (angleDiff > 180) angleDiff -= 360;
-      if (angleDiff < -180) angleDiff += 360;
-      
-      const newRotation = angleDiff % 360;
-
-      // Calculate position after rotation
-      const radians = (newRotation * Math.PI) / 180;
-      const cos = Math.cos(radians);
-      const sin = Math.sin(radians);
-      const rotatedX = localX * cos - localY * sin;
-      const rotatedY = localX * sin + localY * cos;
-
-      // New track position = target position - rotated anchor offset
-      const newX = firstAnchor.worldPos.x - rotatedX;
-      const newY = firstAnchor.worldPos.y - rotatedY;
-
-      // Inherit fixed status if first track is locked
-      const firstTrack = placedTracks[firstAnchor.trackIndex];
-      const inheritFixed = firstTrack.fixed || false;
-
-      const newTrack: PlacedTrack = {
-        trackId,
-        position: { x: newX, y: newY },
-        rotation: newRotation,
-        fixed: inheritFixed
-      };
-
-      const updatedTracks = [...placedTracks, newTrack];
-      setPlacedTracks(updatedTracks);
-
-      // Update canvas size
-      updateCanvasSize(updatedTracks);
-
-      // Find the remaining anchor (not the one we just connected)
-      const remainingAnchor = newTrackData.data.anchors.find(
-        anchor => anchor.id !== availableAnchor.id
-      );
-
-      // Calculate the world position of the remaining anchor
-      if (remainingAnchor) {
-        const remLocalX = remainingAnchor.position.x;
-        const remLocalY = remainingAnchor.position.y;
-        
-        // Apply rotation
-        const remRotatedX = remLocalX * cos - remLocalY * sin;
-        const remRotatedY = remLocalX * sin + remLocalY * cos;
-        
-        // Apply translation
-        const remWorldX = remRotatedX + newX;
-        const remWorldY = remRotatedY + newY;
-        
-        // Calculate anchor angle
-        const remDirX = remainingAnchor.direction.x;
-        const remDirY = remainingAnchor.direction.y;
-        const remLocalAngle = Math.atan2(remDirY, remDirX) * 180 / Math.PI;
-        const remWorldAngle = remLocalAngle + newRotation;
-
-        // Set the remaining anchor as the new firstAnchor
-        const newTrackIndex = updatedTracks.length - 1;
-        setFirstAnchor({
-          trackIndex: newTrackIndex,
-          anchorId: remainingAnchor.id,
-          worldPos: { x: remWorldX, y: remWorldY },
-          angle: remWorldAngle
-        });
-      } else {
-        // No remaining anchor, clear snap mode
-        setFirstAnchor(null);
+      // Get the stationary track's instanceId
+      const stationaryTrack = placedTracks[firstAnchor.trackIndex];
+      if (!stationaryTrack.instanceId) {
+        showToast('Cannot snap: stationary track not yet saved', 'warning');
+        return;
       }
 
-      // Send to server
+      // Send to server to add track and link it
       if (selectedLayout) {
         fetch('https://react.brandonfremin.com/api/layout', {
           method: 'PUT',
@@ -529,50 +461,81 @@ export default function TrackLayout() {
             layoutId: selectedLayout.id,
             addTrack: {
               trackId,
-              x: newX,
-              y: newY,
-              rotation: newRotation
+              x: 0, // Server will calculate position
+              y: 0,
+              rotation: 0
             }
           })
         })
         .then(response => response.json())
         .then(data => {
-          // Update the track with the instanceId returned from server
           if (data.instanceId) {
-            setPlacedTracks(currentTracks => {
-              const updated = [...currentTracks];
-              const trackIndex = updated.findIndex(t => 
-                t.trackId === trackId && 
-                t.position.x === newX && 
-                t.position.y === newY && 
-                !t.instanceId
-              );
-              if (trackIndex !== -1) {
-                updated[trackIndex] = {
-                  ...updated[trackIndex],
-                  instanceId: data.instanceId
-                };
-              }
-              return updated;
+            // Now send linkTrack request
+            return fetch('https://react.brandonfremin.com/api/layout', {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                layoutId: selectedLayout.id,
+                linkTrack: {
+                  stationaryInstanceId: stationaryTrack.instanceId,
+                  stationaryAnchorId: firstAnchor.anchorId,
+                  movedInstanceId: data.instanceId,
+                  movedAnchorId: availableAnchor.id
+                }
+              })
+            }).then(() => {
+              // Reload layout to get updated positions
+              return fetch(`https://react.brandonfremin.com/api/layout?layoutId=${selectedLayout.id}`);
             });
+          }
+        })
+        .then(response => response?.json())
+        .then(data => {
+          if (data?.layouts) {
+            // Find the current layout from the response
+            const updatedLayout = data.layouts.find((l: any) => l.id === selectedLayout.id);
+            if (updatedLayout?.data?.tracks) {
+              // Update placed tracks from server
+              const serverTracks = updatedLayout.data.tracks.map((t: any) => ({
+                instanceId: t.instanceId,
+                trackId: t.trackId,
+                position: { x: t.x, y: t.y },
+                rotation: t.rotation,
+                fixed: t.fixed || false,
+                links: t.links || []
+              }));
+              setPlacedTracks(serverTracks);
+              updateCanvasSize(serverTracks);
 
-            // If we need to set fixed status, send another request with the instanceId
-            if (inheritFixed) {
-              fetch('https://react.brandonfremin.com/api/layout', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  layoutId: selectedLayout.id,
-                  fixTrack: {
-                    instanceId: data.instanceId,
-                    fixed: true
-                  }
-                })
-              }).catch(error => console.error('Failed to set fixed status:', error));
+              // Find the newly added track and set its remaining anchor as firstAnchor
+              const newTrack = serverTracks[serverTracks.length - 1];
+              const remainingAnchor = newTrackData.data.anchors.find(
+                anchor => anchor.id !== availableAnchor.id
+              );
+              
+              if (remainingAnchor && newTrack) {
+                const newTrackIndex = serverTracks.length - 1;
+                const anchorPos = getAnchorWorldPosition(newTrackIndex, remainingAnchor.id);
+                if (anchorPos) {
+                  setFirstAnchor({
+                    trackIndex: newTrackIndex,
+                    anchorId: remainingAnchor.id,
+                    worldPos: { x: anchorPos.x, y: anchorPos.y },
+                    angle: anchorPos.angle
+                  });
+                } else {
+                  setFirstAnchor(null);
+                }
+              } else {
+                setFirstAnchor(null);
+              }
             }
           }
         })
-        .catch(error => console.error('Failed to update layout:', error));
+        .catch(error => {
+          console.error('Failed to link track:', error);
+          showToast('Failed to link track', 'error');
+        });
       }
 
       return;
@@ -650,6 +613,11 @@ export default function TrackLayout() {
 
     setSelectedTrackIndex(index);
     setIsDraggingPlaced(true);
+    
+    // Shift+click to unlink track and drag independently
+    if (e.shiftKey) {
+      setIsUnlinkDragging(true);
+    }
 
     // Calculate offset from track position to mouse position
     const svg = (e.currentTarget.closest('svg') as SVGSVGElement);
@@ -664,6 +632,81 @@ export default function TrackLayout() {
       x: svgPt.x - placedTracks[index].position.x,
       y: svgPt.y - placedTracks[index].position.y
     });
+
+    // Capture initial positions of tracks that will move
+    // For unlink drag, only move the single track
+    // For normal drag, move all connected tracks
+    const initialPositions = new Map<number, { x: number; y: number }>();
+    
+    if (e.shiftKey) {
+      // Only track the single piece being unlinked
+      initialPositions.set(index, {
+        x: placedTracks[index].position.x,
+        y: placedTracks[index].position.y
+      });
+    } else {
+      // Track all connected tracks
+      const connectedTracks = getConnectedTracksStatic(index, placedTracks);
+      connectedTracks.forEach((depth, trackIndex) => {
+        initialPositions.set(trackIndex, {
+          x: placedTracks[trackIndex].position.x,
+          y: placedTracks[trackIndex].position.y
+        });
+      });
+    }
+    
+    setDragStartPositions(initialPositions);
+  };
+
+  // Static helper function to get all connected tracks (doesn't depend on state)
+  const getConnectedTracksStatic = (startIndex: number, tracksArray: PlacedTrack[]): Map<number, number> => {
+    const connections = new Map<number, number>();
+    const queue: Array<{index: number, depth: number}> = [{index: startIndex, depth: 0}];
+    const visited = new Set<number>();
+    visited.add(startIndex);
+
+    while (queue.length > 0) {
+      const {index, depth: currentDepth} = queue.shift()!;
+      connections.set(index, currentDepth);
+
+      const track = tracksArray[index];
+      const links = track.links || [];
+
+      for (const link of links) {
+        const targetIndex = tracksArray.findIndex(t => t.instanceId === link.targetInstanceId);
+        if (targetIndex !== -1 && !visited.has(targetIndex) && !tracksArray[targetIndex].fixed) {
+          visited.add(targetIndex);
+          queue.push({index: targetIndex, depth: currentDepth + 1});
+        }
+      }
+    }
+
+    return connections;
+  };
+
+  // Helper function to get all connected tracks recursively
+  const getConnectedTracks = (startIndex: number, depth: number = 0, visited: Set<number> = new Set()): Map<number, number> => {
+    const connections = new Map<number, number>(); // trackIndex -> depth
+    const queue: Array<{index: number, depth: number}> = [{index: startIndex, depth: 0}];
+    visited.add(startIndex);
+
+    while (queue.length > 0) {
+      const {index, depth: currentDepth} = queue.shift()!;
+      connections.set(index, currentDepth);
+
+      const track = placedTracks[index];
+      const links = track.links || [];
+
+      for (const link of links) {
+        const targetIndex = placedTracks.findIndex(t => t.instanceId === link.targetInstanceId);
+        if (targetIndex !== -1 && !visited.has(targetIndex) && !placedTracks[targetIndex].fixed) {
+          visited.add(targetIndex);
+          queue.push({index: targetIndex, depth: currentDepth + 1});
+        }
+      }
+    }
+
+    return connections;
   };
 
   const handleCanvasMouseMove = (e: React.MouseEvent) => {
@@ -683,11 +726,26 @@ export default function TrackLayout() {
     const newX = mouseX - dragOffset.x;
     const newY = mouseY - dragOffset.y;
 
+    // Calculate delta from initial position
+    const initialPos = dragStartPositions.get(selectedTrackIndex);
+    if (!initialPos) return;
+
+    const deltaX = newX - initialPos.x;
+    const deltaY = newY - initialPos.y;
+
     const updatedTracks = [...placedTracks];
-    updatedTracks[selectedTrackIndex] = {
-      ...updatedTracks[selectedTrackIndex],
-      position: { x: newX, y: newY }
-    };
+    
+    // Move all connected tracks by the same delta from their initial positions
+    dragStartPositions.forEach((startPos, trackIndex) => {
+      updatedTracks[trackIndex] = {
+        ...updatedTracks[trackIndex],
+        position: {
+          x: startPos.x + deltaX,
+          y: startPos.y + deltaY
+        }
+      };
+    });
+    
     setPlacedTracks(updatedTracks);
   };
 
@@ -955,68 +1013,57 @@ export default function TrackLayout() {
         return;
       }
 
-      // Calculate the transformation needed - add 180 degrees for outward-pointing anchors
-      const targetAngle = firstAnchor.angle + 180;
-      const angleDiff = targetAngle - anchorPos.angle;
-      
-      // Normalize angle difference to -180 to 180 range
-      let normalizedAngleDiff = angleDiff % 360;
-      if (normalizedAngleDiff > 180) normalizedAngleDiff -= 360;
-      if (normalizedAngleDiff < -180) normalizedAngleDiff += 360;
-      
-      const newRotation = (placedTrack.rotation + normalizedAngleDiff) % 360;
-
-      // Calculate new position so the anchor ends up at firstAnchor position
-      // We need to rotate the anchor's local position by the new rotation
-      // (anchor is already defined above)
-
-      const localX = anchor.position.x;
-      const localY = anchor.position.y;
-
-      // Apply new rotation to anchor position
-      const radians = (newRotation * Math.PI) / 180;
-      const cos = Math.cos(radians);
-      const sin = Math.sin(radians);
-      const rotatedX = localX * cos - localY * sin;
-      const rotatedY = localX * sin + localY * cos;
-
-      // New track position = target position - rotated anchor offset
-      const newX = firstAnchor.worldPos.x - rotatedX;
-      const newY = firstAnchor.worldPos.y - rotatedY;
-
-      // Rule 3: If first track is fixed, second track becomes fixed too
+      // Get instance IDs
       const firstTrack = placedTracks[firstAnchor.trackIndex];
-      const inheritFixed = firstTrack.fixed || false;
-      
-      // Update track
-      setPlacedTracks(currentTracks =>
-        currentTracks.map((t, i) =>
-          i === trackIndex ? { ...t, position: { x: newX, y: newY }, rotation: newRotation, fixed: inheritFixed } : t
-        )
-      );
+      if (!firstTrack.instanceId || !placedTrack.instanceId) {
+        showToast('Cannot snap: tracks not yet saved', 'warning');
+        setFirstAnchor(null);
+        return;
+      }
 
-      // Send to server
-      if (placedTrack.instanceId && selectedLayout) {
+      // Send linkTrack request to server
+      if (selectedLayout) {
         fetch('https://react.brandonfremin.com/api/layout', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             layoutId: selectedLayout.id,
-            addTrack: {
-              instanceId: placedTrack.instanceId,
-              trackId: placedTrack.trackId,
-              x: newX,
-              y: newY,
-              rotation: newRotation
-            },
-            ...(inheritFixed && {
-              fixTrack: {
-                instanceId: placedTrack.instanceId,
-                fixed: true
-              }
-            })
+            linkTrack: {
+              stationaryInstanceId: firstTrack.instanceId,
+              stationaryAnchorId: firstAnchor.anchorId,
+              movedInstanceId: placedTrack.instanceId,
+              movedAnchorId: anchorId
+            }
           })
-        }).catch(error => console.error('Failed to update track:', error));
+        })
+        .then(() => {
+          // Reload layout to get updated positions
+          return fetch(`https://react.brandonfremin.com/api/layout?layoutId=${selectedLayout.id}`);
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data?.layouts) {
+            // Find the current layout from the response
+            const updatedLayout = data.layouts.find((l: any) => l.id === selectedLayout.id);
+            if (updatedLayout?.data?.tracks) {
+              // Update placed tracks from server
+              const serverTracks = updatedLayout.data.tracks.map((t: any) => ({
+                instanceId: t.instanceId,
+                trackId: t.trackId,
+                position: { x: t.x, y: t.y },
+                rotation: t.rotation,
+                fixed: t.fixed || false,
+                links: t.links || []
+              }));
+              setPlacedTracks(serverTracks);
+              updateCanvasSize(serverTracks);
+            }
+          }
+        })
+        .catch(error => {
+          console.error('Failed to link track:', error);
+          showToast('Failed to link track', 'error');
+        });
       }
 
       // Clear selection
@@ -1281,74 +1328,56 @@ export default function TrackLayout() {
         if (bestSnap) {
           console.log('Snapping to:', bestSnap);
           const targetTrack = placedTracks[bestSnap.targetTrackIndex];
-          const targetAnchorPos = getAnchorWorldPosition(bestSnap.targetTrackIndex, bestSnap.targetAnchorId);
-          const draggedAnchor = draggedTrackData.data.anchors.find(a => a.id === bestSnap.draggedAnchorId);
 
-          if (targetAnchorPos && draggedAnchor) {
-            // Calculate snap transformation
-            const localX = draggedAnchor.position.x;
-            const localY = draggedAnchor.position.y;
-            const dirX = draggedAnchor.direction.x;
-            const dirY = draggedAnchor.direction.y;
-            const localAngle = Math.atan2(dirY, dirX) * 180 / Math.PI;
-            
-            // Calculate current world angle of the dragged anchor
-            const currentWorldAngle = localAngle + draggedTrack.rotation;
-
-            // Add 180 degrees for outward-pointing anchor alignment
-            const targetAngle = targetAnchorPos.angle + 180;
-            let angleDiff = targetAngle - currentWorldAngle;
-            
-            if (angleDiff > 180) angleDiff -= 360;
-            if (angleDiff < -180) angleDiff += 360;
-            
-            const newRotation = (draggedTrack.rotation + angleDiff) % 360;
-
-            const radians = (newRotation * Math.PI) / 180;
-            const cos = Math.cos(radians);
-            const sin = Math.sin(radians);
-            const rotatedX = localX * cos - localY * sin;
-            const rotatedY = localX * sin + localY * cos;
-
-            const newX = targetAnchorPos.x - rotatedX;
-            const newY = targetAnchorPos.y - rotatedY;
-
-            // Inherit fixed status if target is locked
-            const inheritFixed = targetTrack.fixed || false;
-
-            // Update track position and rotation
-            setPlacedTracks(currentTracks =>
-              currentTracks.map((t, i) =>
-                i === selectedTrackIndex ? { ...t, position: { x: newX, y: newY }, rotation: newRotation, fixed: inheritFixed } : t
-              )
-            );
-
-            // Send to server
-            if (draggedTrack.instanceId && selectedLayout) {
-              fetch('https://react.brandonfremin.com/api/layout', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  layoutId: selectedLayout.id,
-                  addTrack: {
-                    instanceId: draggedTrack.instanceId,
-                    trackId: draggedTrack.trackId,
-                    x: newX,
-                    y: newY,
-                    rotation: newRotation
-                  },
-                  ...(inheritFixed && {
-                    fixTrack: {
-                      instanceId: draggedTrack.instanceId,
-                      fixed: true
-                    }
-                  })
-                })
-              }).catch(error => console.error('Failed to update track:', error));
-            }
-
-            setIsDraggingPlaced(false);
-            setSelectedTrackIndex(null);
+          if (draggedTrack.instanceId && targetTrack.instanceId && selectedLayout) {
+            // Send linkTrack request to server
+            fetch('https://react.brandonfremin.com/api/layout', {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                layoutId: selectedLayout.id,
+                linkTrack: {
+                  stationaryInstanceId: targetTrack.instanceId,
+                  stationaryAnchorId: bestSnap.targetAnchorId,
+                  movedInstanceId: draggedTrack.instanceId,
+                  movedAnchorId: bestSnap.draggedAnchorId
+                }
+              })
+            })
+            .then(() => {
+              // Reload layout to get updated positions
+              return fetch(`https://react.brandonfremin.com/api/layout?layoutId=${selectedLayout.id}`);
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data?.layouts) {
+                // Find the current layout from the response
+                const updatedLayout = data.layouts.find((l: any) => l.id === selectedLayout.id);
+                if (updatedLayout?.data?.tracks) {
+                  // Update placed tracks from server
+                  const serverTracks = updatedLayout.data.tracks.map((t: any) => ({
+                    instanceId: t.instanceId,
+                    trackId: t.trackId,
+                    position: { x: t.x, y: t.y },
+                    rotation: t.rotation,
+                    fixed: t.fixed || false,
+                    links: t.links || []
+                  }));
+                  setPlacedTracks(serverTracks);
+                  updateCanvasSize(serverTracks);
+                }
+              }
+              // Clean up drag state after successful link
+              setIsDraggingPlaced(false);
+              setSelectedTrackIndex(null);
+            })
+            .catch(error => {
+              console.error('Failed to link track:', error);
+              showToast('Failed to link track', 'error');
+              // Clean up drag state even on error
+              setIsDraggingPlaced(false);
+              setSelectedTrackIndex(null);
+            });
             return;
           }
         }
@@ -1359,25 +1388,66 @@ export default function TrackLayout() {
 
       // Send to server to update layout
       if (selectedLayout) {
-        fetch('https://react.brandonfremin.com/api/layout', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            layoutId: selectedLayout.id,
-            addTrack: {
-              instanceId: placedTrack.instanceId,
-              trackId: placedTrack.trackId,
-              x: placedTrack.position.x,
-              y: placedTrack.position.y,
-              rotation: placedTrack.rotation
+        // If we're in unlink-drag mode, send unlinkTrack with new position
+        if (isUnlinkDragging) {
+          fetch('https://react.brandonfremin.com/api/layout', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              layoutId: selectedLayout.id,
+              unlinkTrack: {
+                instanceId: placedTrack.instanceId,
+                x: placedTrack.position.x,
+                y: placedTrack.position.y
+              }
+            })
+          })
+          .then(() => {
+            // Reload layout to get updated links
+            return fetch(`https://react.brandonfremin.com/api/layout?layoutId=${selectedLayout.id}`);
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data?.layouts) {
+              const updatedLayout = data.layouts.find((l: any) => l.id === selectedLayout.id);
+              if (updatedLayout?.data?.tracks) {
+                const serverTracks = updatedLayout.data.tracks.map((t: any) => ({
+                  instanceId: t.instanceId,
+                  trackId: t.trackId,
+                  position: { x: t.x, y: t.y },
+                  rotation: t.rotation,
+                  fixed: t.fixed || false,
+                  links: t.links || []
+                }));
+                setPlacedTracks(serverTracks);
+                updateCanvasSize(serverTracks);
+              }
             }
           })
-        }).catch(error => console.error('Failed to update layout:', error));
+          .catch(error => console.error('Failed to unlink track:', error));
+        } else {
+          // Normal drag - use addTrack to move connected pieces
+          fetch('https://react.brandonfremin.com/api/layout', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              layoutId: selectedLayout.id,
+              addTrack: {
+                instanceId: placedTrack.instanceId,
+                trackId: placedTrack.trackId,
+                x: placedTrack.position.x,
+                y: placedTrack.position.y,
+                rotation: placedTrack.rotation
+              }
+            })
+          }).catch(error => console.error('Failed to update layout:', error));
+        }
       }
     }
 
     setIsDraggingPlaced(false);
     setSelectedTrackIndex(null);
+    setIsUnlinkDragging(false);
   };
 
   return (
@@ -1667,48 +1737,76 @@ export default function TrackLayout() {
                         />
                       ))}
 
-                      {/* Anchors */}
+                      {/* Lock indicator for fixed tracks */}
+                      {placedTrack.fixed && (
+                        <g transform={`translate(${track.data.boundingBox.xmin + 5}, ${track.data.boundingBox.ymin + 5})`}>
+                          <circle cx="10" cy="10" r="10" fill="white" opacity="0.9" pointerEvents="none" />
+                          <foreignObject x="2" y="2" width="16" height="16" pointerEvents="none">
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <LockIcon sx={{ fontSize: 16, color: '#f44336' }} />
+                            </div>
+                          </foreignObject>
+                        </g>
+                      )}
+                    </g>
+                  );
+                })}
+
+                {/* Render anchors in two passes: non-dragged tracks first, then dragged track on top */}
+                {placedTracks.map((placedTrack, index) => {
+                  // Skip dragged track in first pass
+                  if (isDraggingPlaced && selectedTrackIndex === index) return null;
+
+                  const track = tracks.find(t => t.id === placedTrack.trackId);
+                  if (!track) return null;
+
+                  return (
+                    <g
+                      key={`anchors-${index}`}
+                      transform={`translate(${placedTrack.position.x}, ${placedTrack.position.y}) rotate(${placedTrack.rotation})`}
+                    >
                       {track.data.anchors.map((anchor) => {
                         const isSelectedAnchor = firstAnchor?.trackIndex === index && firstAnchor?.anchorId === anchor.id;
                         
-                        // Check if this anchor is a valid snap target
                         const isValidTarget = firstAnchor && 
                           firstAnchor.trackIndex !== index && 
                           !placedTrack.fixed;
                         
-                        // Check if we're dragging and this is a matchable anchor
                         const isDragging = isDraggingPlaced && selectedTrackIndex !== null;
-                        const isDraggedTrackAnchor = isDragging && selectedTrackIndex === index;
+                        const isDraggedTrackAnchor = false; // Not dragged in this pass
+                        
+                        let connectionDepth = -1;
+                        let highlightColor = 'deepskyblue';
+                        
+                        if (isDragging && selectedTrackIndex !== null) {
+                          const connectedTracks = getConnectedTracks(selectedTrackIndex);
+                          if (connectedTracks.has(index)) {
+                            connectionDepth = connectedTracks.get(index)!;
+                            highlightColor = connectionDepth === 0 ? 'deepskyblue' : 'yellow';
+                          }
+                        }
                         
                         let isDraggingMatchable = false;
-                        if (isDragging && !isDraggedTrackAnchor && selectedTrackIndex !== null) {
-                          // Check if not fully connected
+                        if (isDragging && !isDraggedTrackAnchor && selectedTrackIndex !== null && connectionDepth === -1) {
                           const anchorPos = getAnchorWorldPosition(index, anchor.id);
                           const connections = anchorPos ? countAnchorConnections(anchorPos) : 0;
-                          
                           isDraggingMatchable = connections < 2;
                         }
                         
-                        // Single color for all anchors
-                        const highlightColor = 'deepskyblue';
-                        
-                        // Use the explicit position data from the anchor
                         const anchorX = anchor.position.x;
                         const anchorY = anchor.position.y;
                         
-                        // Show anchor circle if: it's selected OR (snap mode active and it's a valid target) OR (dragging and matchable)
-                        const showCircle = isSelectedAnchor || isValidTarget || isDraggedTrackAnchor || isDraggingMatchable;
+                        const showCircle = isSelectedAnchor || isValidTarget || isDraggedTrackAnchor || isDraggingMatchable || connectionDepth >= 0;
                         
                         return (
                           <g key={anchor.id}>
-                            {/* Colored circle based on gender */}
                             {showCircle && (
                               <circle
                                 cx={anchorX}
                                 cy={anchorY}
                                 r="8"
                                 fill={highlightColor}
-                                opacity={isDraggedTrackAnchor || isDraggingMatchable ? "0.7" : "0.5"}
+                                opacity={isDraggedTrackAnchor || isDraggingMatchable || connectionDepth >= 0 ? "0.7" : "0.5"}
                                 pointerEvents="none"
                               />
                             )}
@@ -1729,21 +1827,64 @@ export default function TrackLayout() {
                           </g>
                         );
                       })}
-
-                      {/* Lock indicator for fixed tracks */}
-                      {placedTrack.fixed && (
-                        <g transform={`translate(${track.data.boundingBox.xmin + 5}, ${track.data.boundingBox.ymin + 5})`}>
-                          <circle cx="10" cy="10" r="10" fill="white" opacity="0.9" pointerEvents="none" />
-                          <foreignObject x="2" y="2" width="16" height="16" pointerEvents="none">
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                              <LockIcon sx={{ fontSize: 16, color: '#f44336' }} />
-                            </div>
-                          </foreignObject>
-                        </g>
-                      )}
                     </g>
                   );
                 })}
+
+                {/* Second pass: render dragged track's anchors on top */}
+                {isDraggingPlaced && selectedTrackIndex !== null && (() => {
+                  const placedTrack = placedTracks[selectedTrackIndex];
+                  const track = tracks.find(t => t.id === placedTrack.trackId);
+                  if (!track) return null;
+
+                  return (
+                    <g
+                      key={`anchors-dragged-${selectedTrackIndex}`}
+                      transform={`translate(${placedTrack.position.x}, ${placedTrack.position.y}) rotate(${placedTrack.rotation})`}
+                    >
+                      {track.data.anchors.map((anchor) => {
+                        const isSelectedAnchor = firstAnchor?.trackIndex === selectedTrackIndex && firstAnchor?.anchorId === anchor.id;
+                        const isDraggedTrackAnchor = true;
+                        const connectionDepth = 0;
+                        const highlightColor = 'deepskyblue';
+                        
+                        const anchorX = anchor.position.x;
+                        const anchorY = anchor.position.y;
+                        
+                        const showCircle = true; // Always show for dragged track
+                        
+                        return (
+                          <g key={anchor.id}>
+                            {showCircle && (
+                              <circle
+                                cx={anchorX}
+                                cy={anchorY}
+                                r="8"
+                                fill={highlightColor}
+                                opacity="0.7"
+                                pointerEvents="none"
+                              />
+                            )}
+                            <path
+                              d={anchor.tangent}
+                              fill={isSelectedAnchor ? "yellow" : "red"}
+                              stroke={isSelectedAnchor ? "orange" : "darkred"}
+                              strokeWidth="0.3"
+                              pointerEvents="none"
+                            />
+                            <path
+                              d={anchor.normal}
+                              fill="green"
+                              stroke="darkgreen"
+                              strokeWidth="0.3"
+                              pointerEvents="none"
+                            />
+                          </g>
+                        );
+                      })}
+                    </g>
+                  );
+                })()}
               </svg>
             )}
           </Box>
@@ -1751,7 +1892,7 @@ export default function TrackLayout() {
           {/* Controls info - show below canvas */}
           <Box className="mt-2">
             <Typography variant="body2" color="text.secondary">
-              Right-click to lock/unlock • A and D keys to rotate • Double-click track to edit • Double-click anchor (red/green arrows) to snap (180° rotation)
+              Right-click to lock/unlock • Shift+click to unlink • A and D keys to rotate • Double-click track to edit • Double-click anchor (red/green arrows) to snap (180° rotation)
             </Typography>
           </Box>
         </Box>
