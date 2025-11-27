@@ -46,6 +46,7 @@ def handle_put_layout(req: dict, ctx: HttpContext, cassandra_client: CassandraCl
             # Calculate delta from old position to new position
             delta_x = x - old_track["x"]
             delta_y = y - old_track["y"]
+            rotation_delta = rotation - old_track["rotation"]
             
             # Find all connected tracks recursively
             def get_connected_tracks(start_instance_id: str, visited: set = None) -> set:
@@ -76,15 +77,37 @@ def handle_put_layout(req: dict, ctx: HttpContext, cassandra_client: CassandraCl
             # Get all connected tracks
             connected_instance_ids = get_connected_tracks(instance_id)
             
-            # Update positions of all connected tracks
+            # Calculate rotation transformation if rotation changed
+            rotation_delta_rad = math.radians(rotation_delta)
+            cos_delta = math.cos(rotation_delta_rad)
+            sin_delta = math.sin(rotation_delta_rad)
+            pivot_x = old_track["x"]
+            pivot_y = old_track["y"]
+            
+            # Update positions and rotations of all connected tracks
             for track in data["tracks"]:
                 if track["instanceId"] in connected_instance_ids:
-                    track["x"] += delta_x
-                    track["y"] += delta_y
                     if track["instanceId"] == instance_id:
-                        # Also update rotation for the main track
-                        # this is a bug - other rotations should be updated based on connections
+                        # Main track: apply new position and rotation
+                        track["x"] = x
+                        track["y"] = y
                         track["rotation"] = rotation
+                    else:
+                        # Connected tracks: rotate around pivot, then translate
+                        # 1. Get position relative to old pivot
+                        rel_x = track["x"] - pivot_x
+                        rel_y = track["y"] - pivot_y
+                        
+                        # 2. Rotate the relative position
+                        rotated_rel_x = rel_x * cos_delta - rel_y * sin_delta
+                        rotated_rel_y = rel_x * sin_delta + rel_y * cos_delta
+                        
+                        # 3. Translate to new position (old pivot + delta + rotated offset)
+                        track["x"] = x + rotated_rel_x
+                        track["y"] = y + rotated_rel_y
+                        
+                        # 4. Update rotation by the same delta
+                        track["rotation"] = (track["rotation"] + rotation_delta) % 360
         else:
             # Create new track with new instanceId
             counter += 1

@@ -196,7 +196,7 @@ export default function TrackLayout() {
   useEffect(() => {
     if (selectedLayout) {
       // Convert database format to PlacedTrack format
-      const tracks = selectedLayout.data?.tracks?.map(track => ({
+      const loadedTracks = selectedLayout.data?.tracks?.map(track => ({
         instanceId: track.instanceId,
         trackId: track.trackId,
         position: { x: track.x, y: track.y },
@@ -204,7 +204,13 @@ export default function TrackLayout() {
         fixed: track.fixed || false,
         links: track.links || []
       })) || [];
-      setPlacedTracks(tracks);
+      setPlacedTracks(loadedTracks);
+      
+      // Update canvas size only when layout is initially loaded
+      // Use a small timeout to ensure tracks data is available
+      if (loadedTracks.length > 0 && tracks.length > 0) {
+        setTimeout(() => updateCanvasSize(loadedTracks), 100);
+      }
     } else {
       setPlacedTracks([]);
     }
@@ -1158,18 +1164,53 @@ export default function TrackLayout() {
       return;
     }
 
-    // Update local state
+    // Calculate deltas
+    const deltaX = newX - placedTrack.position.x;
+    const deltaY = newY - placedTrack.position.y;
+    const rotationDelta = newRotation - placedTrack.rotation;
+
+    // Find all connected tracks
+    const connectedTracks = getConnectedTracksStatic(editingTrackIndex, placedTracks);
+    
+    // Calculate rotation transformation
+    const rotationDeltaRad = (rotationDelta * Math.PI) / 180;
+    const cosDelta = Math.cos(rotationDeltaRad);
+    const sinDelta = Math.sin(rotationDeltaRad);
+    const pivotX = placedTrack.position.x;
+    const pivotY = placedTrack.position.y;
+
+    // Update local state for all connected tracks
     setPlacedTracks(currentTracks => 
-      currentTracks.map((t, i) => 
-        i === editingTrackIndex ? { 
-          ...t, 
-          position: { x: newX, y: newY },
-          rotation: newRotation % 360
-        } : t
-      )
+      currentTracks.map((t, i) => {
+        if (i === editingTrackIndex) {
+          // Main track: apply new position and rotation
+          return { 
+            ...t, 
+            position: { x: newX, y: newY },
+            rotation: newRotation % 360
+          };
+        } else if (connectedTracks.has(i)) {
+          // Connected track: rotate around pivot, then translate
+          const relX = t.position.x - pivotX;
+          const relY = t.position.y - pivotY;
+          const rotatedRelX = relX * cosDelta - relY * sinDelta;
+          const rotatedRelY = relX * sinDelta + relY * cosDelta;
+          
+          return {
+            ...t,
+            position: {
+              x: newX + rotatedRelX,
+              y: newY + rotatedRelY
+            },
+            rotation: (t.rotation + rotationDelta) % 360
+          };
+        }
+        return t;
+      })
     );
 
     // Send to server if track has instanceId
+    // The backend will handle moving all connected tracks
     if (placedTrack.instanceId) {
       fetch('https://react.brandonfremin.com/api/layout', {
         method: 'PUT',
@@ -1231,11 +1272,40 @@ export default function TrackLayout() {
 
     const newRotation = (placedTrack.rotation + rotationDelta) % 360;
 
-    // Update local state immediately
+    // Find all connected tracks
+    const connectedTracks = getConnectedTracksStatic(index, placedTracks);
+    
+    // Calculate rotation transformation
+    const rotationDeltaRad = (rotationDelta * Math.PI) / 180;
+    const cosDelta = Math.cos(rotationDeltaRad);
+    const sinDelta = Math.sin(rotationDeltaRad);
+    const pivotX = placedTrack.position.x;
+    const pivotY = placedTrack.position.y;
+
+    // Update local state immediately for all connected tracks
     setPlacedTracks(currentTracks => 
-      currentTracks.map((t, i) => 
-        i === index ? { ...t, rotation: newRotation } : t
-      )
+      currentTracks.map((t, i) => {
+        if (i === index) {
+          // Main track: just update rotation
+          return { ...t, rotation: newRotation };
+        } else if (connectedTracks.has(i)) {
+          // Connected track: rotate around pivot
+          const relX = t.position.x - pivotX;
+          const relY = t.position.y - pivotY;
+          const rotatedRelX = relX * cosDelta - relY * sinDelta;
+          const rotatedRelY = relX * sinDelta + relY * cosDelta;
+          
+          return {
+            ...t,
+            position: {
+              x: pivotX + rotatedRelX,
+              y: pivotY + rotatedRelY
+            },
+            rotation: (t.rotation + rotationDelta) % 360
+          };
+        }
+        return t;
+      })
     );
 
     // Clear existing timer
