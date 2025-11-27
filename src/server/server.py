@@ -18,16 +18,20 @@ from src.common import constants
 from src.handlers.handle_iam import handle_iam
 from src.handlers.handle_ping import handle_ping
 from src.handlers.handle_get_preview import handle_get_preview
+
 from src.handlers.handle_get_track import handle_get_track
+from src.handlers.handle_create_track import handle_create_track
+from src.handlers.handle_delete_track import handle_delete_track
+
 from src.handlers.handle_get_layout import handle_get_layout
 from src.handlers.handle_create_layout import handle_create_layout
 from src.handlers.handle_delete_layout import handle_delete_layout
-from src.handlers.handle_create_track import handle_create_track
-from src.handlers.handle_delete_track import handle_delete_track
+from src.handlers.handle_put_layout import handle_put_layout
 
 logger = logging.getLogger("server")
 
 
+_PUT_REGISTRY: dict[str, Callable] = {}
 _DELETE_REGISTRY: dict[str, Callable] = {}
 _POST_REGISTRY: dict[str, Callable] = {}
 _GET_REGISTRY: dict[str, Callable] = {}
@@ -52,6 +56,9 @@ def get(route: str):
 
 def post(route: str):
     return __register(route, _POST_REGISTRY)
+
+def put(route: str):
+    return __register(route, _PUT_REGISTRY)
 
 def delete(route: str):
     return __register(route, _DELETE_REGISTRY)
@@ -106,6 +113,8 @@ class Server:
             self._app.post(route)(partial(func, self))
         for route, func in _DELETE_REGISTRY.items():
             self._app.delete(route)(partial(func, self))
+        for route, func in _PUT_REGISTRY.items():
+            self._app.put(route)(partial(func, self))
         for route, func in _WS_REGISTRY.items():
             self._app.websocket(route)(partial(func, self))
 
@@ -157,6 +166,11 @@ class Server:
     async def api_post_layout(self, request: Request) -> JSONResponse:
         (req, ctx) = await parse_http_request(request)
         return JSONResponse(content=handle_create_layout(req, ctx, self._cassandra_client))
+
+    @put("/api/layout")
+    async def api_put_layout(self, request: Request) -> JSONResponse:
+        (req, ctx) = await parse_http_request(request)
+        return JSONResponse(content=handle_put_layout(req, ctx, self._cassandra_client))
 
     @get("/api/layout")
     async def api_get_layout(self, request: Request) -> JSONResponse:

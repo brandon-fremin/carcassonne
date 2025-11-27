@@ -153,7 +153,7 @@ class CassandraClient:
             (layout.id, layout.name, json.dumps(layout.layoutdata), json.dumps(layout.metadata)),
         )
         return result.one().applied if result else False
-    
+
     def delete_layout(self, layout_id: str) -> bool:
         session = self._connection()
         result = session.execute(
@@ -175,6 +175,24 @@ class CassandraClient:
             (layout.name, json.dumps(layout.layoutdata), json.dumps(layout.metadata), layout.id),
         )
         return result.one().applied if result else False
+
+    def get_layout(self, layout_id: str) -> LayoutRecord | None:
+        session = self._connection()
+        result = session.execute(
+            """
+            SELECT id, name, layoutdata, metadata FROM layouts WHERE id = %s;
+            """,
+            (layout_id,),
+        )
+        row = result.one()
+        if not row:
+            return None
+        return LayoutRecord(
+            row.id,
+            row.name,
+            json.loads(row.layoutdata) if row.layoutdata else {},
+            json.loads(row.metadata) if row.metadata else {},
+        )
 
     def get_layouts(self) -> list[LayoutRecord]:
         session = self._connection()

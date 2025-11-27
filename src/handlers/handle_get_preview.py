@@ -93,34 +93,31 @@ def anchors(centerline: str) -> list[str]:
             f"Z"
         )
         return arrow_path
+    
+    def make_anchor(t: float, anchor_type: str, anchor_id: str) -> dict:
+        pt: complex = path.point(t)
+        tan: complex = path.unit_tangent(t)
+        norm = complex(-tan.imag, tan.real)
+        length = 8
+        size = 1
+        return {
+            "id": anchor_id,
+            "type": anchor_type,
+            "position": {
+                "x": pt.real,
+                "y": pt.imag
+            },
+            "direction": {
+                "x": tan.real,
+                "y": tan.imag
+            },
+            "tangent": arrow_path(pt, tan, norm, length, size),
+            "normal": arrow_path(pt, norm, complex(-norm.imag, norm.real), length, size)
+        }
 
-    length = 8
-    size = 1
-
-    # Start anchor
-    t0 = 0.0
-    pt0: complex = path.point(t0)
-    tan0: complex = path.unit_tangent(t0)
-    norm0 = complex(-tan0.imag, tan0.real)
-    anchors_list.append({
-        "id": "start",
-        "type": "female",
-        "tangent": arrow_path(pt0, tan0, norm0, length, size),
-        "normal": arrow_path(pt0, norm0, complex(-norm0.imag, norm0.real), length, size)
-    })
-
-    # End anchor
-    t1 = 1.0
-    pt1: complex = path.point(t1)
-    tan1: complex = path.unit_tangent(t1)
-    norm1 = complex(-tan1.imag, tan1.real)
-    anchors_list.append({
-        "id": "end",
-        "type": "male",
-        "tangent": arrow_path(pt1, tan1, norm1, length, size),
-        "normal": arrow_path(pt1, norm1, complex(-norm1.imag, norm1.real), length, size)
-    })
-
+    # anchors
+    anchors_list.append(make_anchor(0.0, "female", "start"))
+    anchors_list.append(make_anchor(1.0, "male", "end"))
     return anchors_list
 
 
