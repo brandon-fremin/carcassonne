@@ -94,15 +94,17 @@ def anchors(centerline: str) -> list[str]:
         )
         return arrow_path
     
-    def make_anchor(t: float, anchor_type: str, anchor_id: str) -> dict:
+    def make_anchor(is_start: bool) -> dict:
+        t = 0.0 if is_start else 1.0
         pt: complex = path.point(t)
         tan: complex = path.unit_tangent(t)
+        if is_start:
+            tan = -1 * tan
         norm = complex(-tan.imag, tan.real)
         length = 8
         size = 1
         return {
-            "id": anchor_id,
-            "type": anchor_type,
+            "id": "start" if is_start else "end",
             "position": {
                 "x": pt.real,
                 "y": pt.imag
@@ -115,9 +117,9 @@ def anchors(centerline: str) -> list[str]:
             "normal": arrow_path(pt, norm, complex(-norm.imag, norm.real), length, size)
         }
 
-    # anchors
-    anchors_list.append(make_anchor(0.0, "female", "start"))
-    anchors_list.append(make_anchor(1.0, "male", "end"))
+    # anchors - always point outward from centerline
+    anchors_list.append(make_anchor(True))
+    anchors_list.append(make_anchor(False))
     return anchors_list
 
 

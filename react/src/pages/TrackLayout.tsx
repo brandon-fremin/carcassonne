@@ -16,7 +16,6 @@ interface TrackResponse {
   rails: Array<{ path: string }>;
   anchors: Array<{
     id: string;
-    type: string;
     position: {
       x: number;
       y: number;
@@ -164,7 +163,6 @@ export default function TrackLayout() {
     anchorId: string;
     worldPos: { x: number; y: number };
     angle: number;
-    type: string;
   } | null>(null);
   const [toastOpen, setToastOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string>('');
@@ -423,13 +421,11 @@ export default function TrackLayout() {
       const newTrackData = tracks.find(t => t.id === trackId);
       if (!newTrackData) return;
 
-      // Find the first anchor with opposite gender
-      const oppositeGenderAnchor = newTrackData.data.anchors.find(
-        anchor => anchor.type !== firstAnchor.type
-      );
+      // Get any available anchor (preferably the first one)
+      const availableAnchor = newTrackData.data.anchors[0];
 
-      if (!oppositeGenderAnchor) {
-        showToast('No compatible anchor found on this track', 'warning');
+      if (!availableAnchor) {
+        showToast('No anchor found on this track', 'warning');
         return;
       }
 
@@ -441,16 +437,16 @@ export default function TrackLayout() {
         return;
       }
 
-      // Calculate position and rotation to align the opposite gender anchor with firstAnchor
+      // Calculate position and rotation to align the anchor with firstAnchor (180 degrees opposite)
       // Start with the anchor's local position and direction
-      const localX = oppositeGenderAnchor.position.x;
-      const localY = oppositeGenderAnchor.position.y;
-      const dirX = oppositeGenderAnchor.direction.x;
-      const dirY = oppositeGenderAnchor.direction.y;
+      const localX = availableAnchor.position.x;
+      const localY = availableAnchor.position.y;
+      const dirX = availableAnchor.direction.x;
+      const dirY = availableAnchor.direction.y;
       const localAngle = Math.atan2(dirY, dirX) * 180 / Math.PI;
 
-      // Calculate rotation needed to align with firstAnchor
-      const targetAngle = firstAnchor.angle;
+      // Calculate rotation needed to align with firstAnchor (180 degrees opposite)
+      const targetAngle = firstAnchor.angle + 180;
       let angleDiff = targetAngle - localAngle;
       
       // Normalize angle difference to -180 to 180 range
@@ -489,7 +485,7 @@ export default function TrackLayout() {
 
       // Find the remaining anchor (not the one we just connected)
       const remainingAnchor = newTrackData.data.anchors.find(
-        anchor => anchor.id !== oppositeGenderAnchor.id
+        anchor => anchor.id !== availableAnchor.id
       );
 
       // Calculate the world position of the remaining anchor
@@ -517,8 +513,7 @@ export default function TrackLayout() {
           trackIndex: newTrackIndex,
           anchorId: remainingAnchor.id,
           worldPos: { x: remWorldX, y: remWorldY },
-          angle: remWorldAngle,
-          type: remainingAnchor.type
+          angle: remWorldAngle
         });
       } else {
         // No remaining anchor, clear snap mode
@@ -636,6 +631,12 @@ export default function TrackLayout() {
 
   const handleTrackMouseDown = (e: React.MouseEvent, index: number) => {
     e.stopPropagation();
+    
+    // Ctrl+click to delete track
+    if (e.ctrlKey) {
+      handleDeleteTrack(index);
+      return;
+    }
     
     const placedTrack = placedTracks[index];
 
@@ -921,24 +922,15 @@ export default function TrackLayout() {
     if (!anchor) return;
 
     if (!firstAnchor) {
-      // First anchor selected - store type info
+      // First anchor selected - store info
       setFirstAnchor({
         trackIndex,
         anchorId,
         worldPos: anchorPos,
-        angle: anchorPos.angle,
-        type: anchor.type
+        angle: anchorPos.angle
       });
     } else {
       // Second anchor selected - perform snap
-      
-      // Rule 3: Only male and female anchors can connect
-      if (firstAnchor.type === anchor.type) {
-        console.log('Cannot snap: same anchor types (need male-female connection)');
-        showToast('Cannot snap: anchors must be male-female pairs', 'warning');
-        setFirstAnchor(null);
-        return;
-      }
       
       // Rule 1: Can't move a locked track
       if (placedTrack.fixed) {
@@ -963,9 +955,8 @@ export default function TrackLayout() {
         return;
       }
 
-      // Calculate the transformation needed
-      // The second anchor should align with the first anchor (same direction)
-      const targetAngle = firstAnchor.angle;
+      // Calculate the transformation needed - add 180 degrees for outward-pointing anchors
+      const targetAngle = firstAnchor.angle + 180;
       const angleDiff = targetAngle - anchorPos.angle;
       
       // Normalize angle difference to -180 to 180 range
@@ -1087,8 +1078,7 @@ export default function TrackLayout() {
           trackIndex: index,
           anchorId: nearestAnchor.id,
           worldPos: anchorPos,
-          angle: anchorPos.angle,
-          type: anchor.type
+          angle: anchorPos.angle
         });
       }
       return;
@@ -1259,9 +1249,6 @@ export default function TrackLayout() {
             if (!otherTrackData) return;
 
             otherTrackData.data.anchors.forEach(otherAnchor => {
-              // Only connect opposite genders
-              if (draggedAnchor.type === otherAnchor.type) return;
-
               const otherAnchorPos = getAnchorWorldPosition(otherIndex, otherAnchor.id);
               if (!otherAnchorPos) return;
 
@@ -1275,7 +1262,7 @@ export default function TrackLayout() {
               const dy = draggedAnchorPos.y - otherAnchorPos.y;
               const distance = Math.sqrt(dx * dx + dy * dy);
 
-              console.log(`Checking: ${draggedAnchor.id} (${draggedAnchor.type}) to ${otherAnchor.id} (${otherAnchor.type}), distance: ${distance.toFixed(1)}`);
+              console.log(`Checking: ${draggedAnchor.id} to ${otherAnchor.id}, distance: ${distance.toFixed(1)}`);
 
               if (distance < snapThreshold && (!bestSnap || distance < bestSnap.distance)) {
                 console.log('Found potential snap!');
@@ -1308,7 +1295,8 @@ export default function TrackLayout() {
             // Calculate current world angle of the dragged anchor
             const currentWorldAngle = localAngle + draggedTrack.rotation;
 
-            const targetAngle = targetAnchorPos.angle;
+            // Add 180 degrees for outward-pointing anchor alignment
+            const targetAngle = targetAnchorPos.angle + 180;
             let angleDiff = targetAngle - currentWorldAngle;
             
             if (angleDiff > 180) angleDiff -= 360;
@@ -1683,10 +1671,9 @@ export default function TrackLayout() {
                       {track.data.anchors.map((anchor) => {
                         const isSelectedAnchor = firstAnchor?.trackIndex === index && firstAnchor?.anchorId === anchor.id;
                         
-                        // Check if this anchor is a valid snap target (opposite gender from selected)
+                        // Check if this anchor is a valid snap target
                         const isValidTarget = firstAnchor && 
                           firstAnchor.trackIndex !== index && 
-                          firstAnchor.type !== anchor.type && 
                           !placedTrack.fixed;
                         
                         // Check if we're dragging and this is a matchable anchor
@@ -1695,26 +1682,15 @@ export default function TrackLayout() {
                         
                         let isDraggingMatchable = false;
                         if (isDragging && !isDraggedTrackAnchor && selectedTrackIndex !== null) {
-                          const draggedTrack = placedTracks[selectedTrackIndex];
-                          const draggedTrackData = tracks.find(t => t.id === draggedTrack.trackId);
+                          // Check if not fully connected
+                          const anchorPos = getAnchorWorldPosition(index, anchor.id);
+                          const connections = anchorPos ? countAnchorConnections(anchorPos) : 0;
                           
-                          if (draggedTrackData) {
-                            // Check if this anchor has opposite gender from any anchor on dragged track
-                            const hasOppositeGender = draggedTrackData.data.anchors.some(
-                              draggedAnchor => draggedAnchor.type !== anchor.type
-                            );
-                            
-                            // Check if not fully connected
-                            const anchorPos = getAnchorWorldPosition(index, anchor.id);
-                            const connections = anchorPos ? countAnchorConnections(anchorPos) : 0;
-                            
-                            isDraggingMatchable = hasOppositeGender && connections < 2;
-                          }
+                          isDraggingMatchable = connections < 2;
                         }
                         
-                        // Determine highlight color based on gender
-                        const isMale = anchor.type === 'male';
-                        const highlightColor = isMale ? 'dodgerblue' : 'hotpink';
+                        // Single color for all anchors
+                        const highlightColor = 'deepskyblue';
                         
                         // Use the explicit position data from the anchor
                         const anchorX = anchor.position.x;
@@ -1775,7 +1751,7 @@ export default function TrackLayout() {
           {/* Controls info - show below canvas */}
           <Box className="mt-2">
             <Typography variant="body2" color="text.secondary">
-              Right-click to lock/unlock • A and D keys to rotate • Double-click track to edit • Double-click anchor (red/green arrows) to snap
+              Right-click to lock/unlock • A and D keys to rotate • Double-click track to edit • Double-click anchor (red/green arrows) to snap (180° rotation)
             </Typography>
           </Box>
         </Box>
@@ -1853,19 +1829,18 @@ export default function TrackLayout() {
               }}
               draggable={!firstAnchor}
               onDragStart={(e) => handleDragStart(e, track.id)}
-              onClick={() => {
+              onClick={(e) => {
                 if (firstAnchor) {
                   // Snap mode active - place and snap the track immediately
                   const newTrackData = tracks.find(t => t.id === track.id);
                   if (!newTrackData) return;
 
-                  // Find the first anchor with opposite gender
-                  const oppositeGenderAnchor = newTrackData.data.anchors.find(
-                    anchor => anchor.type !== firstAnchor.type
-                  );
+                  // Get anchor: use second anchor if Shift is held, otherwise first
+                  const anchorIndex = e.shiftKey ? 1 : 0;
+                  const availableAnchor = newTrackData.data.anchors[anchorIndex];
 
-                  if (!oppositeGenderAnchor) {
-                    showToast('No compatible anchor found on this track', 'warning');
+                  if (!availableAnchor) {
+                    showToast(`No anchor found at index ${anchorIndex}`, 'warning');
                     return;
                   }
 
@@ -1877,15 +1852,15 @@ export default function TrackLayout() {
                     return;
                   }
 
-                  // Calculate position and rotation to align the opposite gender anchor with firstAnchor
-                  const localX = oppositeGenderAnchor.position.x;
-                  const localY = oppositeGenderAnchor.position.y;
-                  const dirX = oppositeGenderAnchor.direction.x;
-                  const dirY = oppositeGenderAnchor.direction.y;
+                  // Calculate position and rotation to align the anchor with firstAnchor (180 degrees opposite)
+                  const localX = availableAnchor.position.x;
+                  const localY = availableAnchor.position.y;
+                  const dirX = availableAnchor.direction.x;
+                  const dirY = availableAnchor.direction.y;
                   const localAngle = Math.atan2(dirY, dirX) * 180 / Math.PI;
 
-                  // Calculate rotation needed to align with firstAnchor
-                  const targetAngle = firstAnchor.angle;
+                  // Calculate rotation needed to align with firstAnchor (180 degrees opposite)
+                  const targetAngle = firstAnchor.angle + 180;
                   let angleDiff = targetAngle - localAngle;
                   
                   // Normalize angle difference to -180 to 180 range
@@ -1921,7 +1896,7 @@ export default function TrackLayout() {
 
                   // Find the remaining anchor (not the one we just connected)
                   const remainingAnchor = newTrackData.data.anchors.find(
-                    anchor => anchor.id !== oppositeGenderAnchor.id
+                    anchor => anchor.id !== availableAnchor.id
                   );
 
                   // Calculate the world position of the remaining anchor
@@ -1949,8 +1924,7 @@ export default function TrackLayout() {
                       trackIndex: newTrackIndex,
                       anchorId: remainingAnchor.id,
                       worldPos: { x: remWorldX, y: remWorldY },
-                      angle: remWorldAngle,
-                      type: remainingAnchor.type
+                      angle: remWorldAngle
                     });
                   } else {
                     // No remaining anchor, clear snap mode
